@@ -1,0 +1,95 @@
+// https://drawsql.app/teams/shelfie/diagrams/shelves
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator prismaClassGenerator {
+  provider = "prisma-class-generator"
+  output   = "../src/generated/prisma-client"
+  dryRun   = false
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id          String      @id @default(cuid())
+  title       String
+  authors     String[]
+  description String?
+  publishedAt DateTime?
+  publisher   String?
+  pageCount   Int?
+  imageLinks  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  shelves     ShelfBook[]
+}
+
+// User model
+model User {
+  id      String  @id @default(cuid())
+  name    String
+  email   String  @unique
+  icon    String?
+  shelves Shelf[]
+}
+
+// Shelf model
+model Shelf {
+  id      String      @id @default(cuid())
+  name    String
+  ownerId String
+  owner   User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  books   ShelfBook[]
+}
+
+// ShelfBook join table for Shelf and Book relationships. Super-type for InProgressShelfBook, FutureReadShelfBook, and PastReadShelfBook. 
+model ShelfBook {
+  id      String @id @default(cuid())
+  shelfId String
+  bookId  String
+
+  shelf               Shelf                @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+  book                Book                 @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  status              Status // 
+  inProgressShelfBook InProgressShelfBook?
+  futureReadShelfBook FutureReadShelfBook?
+  pastReadShelfBook   PastReadShelfBook?
+
+  @@unique([shelfId, bookId, status]) // Unique constraint for each book in a category on a shelf
+}
+
+model InProgressShelfBook {
+  shelfBookId String @unique
+  currentPage Int
+
+  shelfBook ShelfBook @relation(fields: [shelfBookId], references: [id], onDelete: Cascade)
+
+  @@id([shelfBookId])
+}
+
+model FutureReadShelfBook {
+  shelfBookId String    @unique
+  shelfBook   ShelfBook @relation(fields: [shelfBookId], references: [id], onDelete: Cascade)
+
+  @@id([shelfBookId])
+}
+
+model PastReadShelfBook {
+  shelfBookId String @unique
+  rating      Int
+
+  shelfBook ShelfBook @relation(fields: [shelfBookId], references: [id], onDelete: Cascade)
+
+  @@id([shelfBookId])
+}
+
+// Book category model
+enum Status {
+  PAST_READ
+  FUTURE_READ
+  IN_PROGRESS
+}
