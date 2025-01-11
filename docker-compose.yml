@@ -1,0 +1,56 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: bookshary_db
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=bookshary_db
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    networks:
+      - bookshary_network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: bookshary_api
+    hostname: bookshary_api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    environment:
+      - GOOGLE_BOOKS_API_KEY=YOUR_GOOGLE_BOOKS_API_KEY
+      - GOOGLE_CLIENT_ID=YOUR_GOOGLE_BOOKS_CLIENT_ID
+      - DATABASE_URL=postgresql://admin:password@bookshary_db:5432/bookshary_db?schema=public
+    networks:
+      - bookshary_network
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: bookshary_web
+    hostname: bookshary_web
+    ports:
+      - '4200:4200'
+    environment:
+      - API_URL=http://bookshary_api:3000
+      - NEXTAUTH_URL=http://bookshary_web:4200
+      - NEXTAUTH_SECRET=secret
+
+    networks:
+      - bookshary_network
+
+volumes:
+  postgres:
+
+networks:
+  bookshary_network:
+    name: bookshary_network

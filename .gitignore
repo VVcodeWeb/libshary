@@ -44,3 +44,7 @@ Thumbs.db
 # Next.js
 .next
 out
+apps/api/src/generated
+libs/prisma/generated
+.env
+.temp

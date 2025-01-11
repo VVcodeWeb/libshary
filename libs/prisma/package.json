@@ -1,0 +1,11 @@
+{
+  "name": "@bookshary/prisma",
+  "version": "0.0.1",
+  "dependencies": {},
+  "private": true,
+  "nx": {
+    "sourceRoot": "libs/prisma",
+    "projectType": "library",
+    "name": "prisma"
+  }
+}

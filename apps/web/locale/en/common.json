@@ -1,0 +1,28 @@
+{
+  "delete": "Delete",
+  "edit": "Edit",
+  "submit": "Submit",
+  "shelf-modal": {
+    "details": {
+      "title": "Create a shelf",
+      "name-placeholder": "Enter shelf name",
+      "privacy-label": "Make private",
+      "description-placeholder": "Enter description (optional)"
+    }
+  },
+  "sidebar": {
+    "settings": "Settings",
+    "logout": "Log out",
+    "privacy": "TODO",
+    "shelves": "Shelves"
+  },
+  "book-modal": {
+    "button": "Add book",
+    "details": {
+      "title": "Create a book",
+      "name-placeholder": "Enter book name",
+      "author-placeholder": "Enter author name",
+      "description-placeholder": "Enter description (optional)"
+    }
+  }
+}

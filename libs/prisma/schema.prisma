@@ -1,0 +1,157 @@
+// https://drawsql.app/teams/shelfie/diagrams/shelves
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id           String    @id @default(cuid())
+  title        String
+  authors      String[]
+  description  String?
+  publishedAt  DateTime?
+  publisher    String?
+  pageCount    Int?
+  imageLinks   String?
+  isbn10       String?
+  isbn13       String?
+  googleBookId String?   @unique
+  categories   String[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sections SectionBook[]
+
+  @@index([googleBookId])
+}
+
+model Shelf {
+  id          String    @id @default(cuid())
+  name        String
+  ownerId     String
+  private     Boolean
+  description String?
+  sections    Section[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Section {
+  id      String        @id @default(cuid())
+  name    String
+  shelfId String
+  books   SectionBook[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shelf Shelf @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+
+  @@unique([name, shelfId])
+}
+
+model SectionBook {
+  id        String @id @default(cuid())
+  sectionId String
+  bookId    String
+
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  book    Book    @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sectionId, bookId])
+}
+
+//=====TODO=====
+model Icon {
+  id   String @id @default(cuid())
+  name String
+  url  String
+}
+
+model ColorPalette {
+  id   String @id @default(cuid())
+  name String
+  hex  String
+}
+
+//=====AUTH=====
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  shelves       Shelf[]
+
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}

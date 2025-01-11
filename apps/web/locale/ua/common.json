@@ -1,0 +1,28 @@
+{
+  "delete": "Видалити",
+  "edit": "Редагувати",
+  "submit": "Надіслати",
+  "shelf-modal": {
+    "details": {
+      "title": "Створити полицю",
+      "name-placeholder": "Введіть назву полиці",
+      "privacy-label": "Зробити приватним",
+      "description-placeholder": "Введіть опис (необов'язково)"
+    }
+  },
+  "sidebar": {
+    "settings": "Налаштування",
+    "logout": "Вийти",
+    "privacy": "Конфіденційність",
+    "shelves": "Полиці"
+  },
+  "book-modal": {
+    "button": "Додати книгу",
+    "details": {
+      "title": "Створити книгу",
+      "name-placeholder": "Введіть назву книги",
+      "author-placeholder": "Введіть ім'я автора",
+      "description-placeholder": "Введіть опис (необов'язково)"
+    }
+  }
+}
