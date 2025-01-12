@@ -1,6 +1,5 @@
 'use client';
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useActionState, useState } from 'react';
+import { useState } from 'react';
 import { BookSearchItem } from './BookSearchItem';
 import { useAddBookSteps } from '@web/hooks/useAddBookSteps';
 import { searchBooks } from '@web/actions/books/queries';
@@ -80,7 +79,7 @@ export const SearchStep = () => {
       <div className="modal-action">
         <button
           className="btn btn-primary"
-          disabled={!Boolean(data.book?.googleBookId)}
+          disabled={!data.book?.googleBookId}
           onClick={onContinueClick}
         >
           Continue

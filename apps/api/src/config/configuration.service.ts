@@ -27,4 +27,7 @@ export class ConfigurationService {
   get google_client_id() {
     return this.configService.get<string>('google_client_id') as string;
   }
+  get google_redirect_url() {
+    return this.configService.get<string>('google_redirect_url') as string;
+  }
 }

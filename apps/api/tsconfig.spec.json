@@ -8,10 +8,5 @@
     "composite": true,
     "types": ["jest"]
   },
-  "include": [
-    "src/**/*.ts", // Include application source files
-    "**/*.spec.ts", // Include test files
-    "**/*.d.ts",
-    "**/*.mock.ts"
-  ]
+  "include": ["src/**/*.ts", "**/*.spec.ts", "**/*.d.ts", "**/*.mock.ts"]
 }

@@ -64,7 +64,7 @@ export class ShelvesService {
   async findOne(
     id: string,
     user: AuthUser,
-    includeAll: boolean = false,
+    includeAll: boolean,
   ): Promise<
     | Shelf
     | null

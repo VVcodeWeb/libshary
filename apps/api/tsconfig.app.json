@@ -14,13 +14,14 @@
     "sourceMap": true,
     "incremental": true,
     "skipLibCheck": true,
-    "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "composite": true,
+    "noImplicitAny": false
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../../libs/shared-types/src/**/*.ts"],
   "exclude": [
     "jest-config.ts",
     "src/**/*.spec.ts",

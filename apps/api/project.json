@@ -36,7 +36,7 @@
     "test": {
       "executor": "@nx/jest:jest",
       "options": {
-        "jestConfig": "apps/api/jest-config.js",
+        "jestConfig": "apps/api/jest.config.js",
         "passWithNoTests": true
       }
     },
@@ -44,9 +44,7 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "eslintConfig": "apps/api/.eslintrc.js",
-        "lintFilePatterns": ["apps/api/**/*.ts"],
-        "outputFile": "dist/.lintresult"
+        "lintFilePatterns": ["apps/api/**/*.ts"]
       }
     },
     "container": {

@@ -1,14 +1,18 @@
 {
   "root": true,
-  "plugins": ["@nx"],
+  "plugins": ["@nx/eslint-plugin"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "extends": ["plugin:@nx/typescript"],
       "rules": {
+        "no-unused-private-class-members": "warn",
+        "no-unused-vars": "warn",
         "@nx/enforce-module-boundaries": [
           "error",
           {
             "enforceBuildableLibDependency": true,
+            "allowCircularSelfDependency": true,
             "allow": [],
             "depConstraints": [
               {
@@ -20,17 +24,7 @@
         ]
       }
     },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nx/typescript"],
-      "rules": {
-        "no-unused-vars": "warn"
-      }
-    },
+
     {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nx/javascript"],

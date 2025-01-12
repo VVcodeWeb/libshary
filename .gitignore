@@ -48,3 +48,5 @@ apps/api/src/generated
 libs/prisma/generated
 .env
 .temp
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

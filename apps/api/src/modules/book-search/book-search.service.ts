@@ -166,7 +166,7 @@ export class BookSearchService {
   }
 
   //TODO: implement
-  #openLibraryFindById(id: string): Observable<TransientBookModel> {
+  #_openLibraryFindById(id: string): Observable<TransientBookModel> {
     const url = `${this.configurationService.open_libary_url}/works/${id}.json`;
     return this.#openLibraryFetch<unknown>(url).pipe(
       map((data) => {

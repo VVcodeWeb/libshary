@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "noPropertyAccessFromIndexSignature": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false
+  },
+  "files": [],
+  "include": [],
+
+  "references": [
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

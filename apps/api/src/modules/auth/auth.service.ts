@@ -29,9 +29,9 @@ export class AuthService {
     });
   }
 
-  async googleLogin(user: GoogleLoginUserDto) {
+  async googleLogin(user: unknown) {
     if (!user) {
-      throw new UnauthorizedException('No user from google');
+      throw new UnauthorizedException('No user from google provider');
     }
     const {
       firstName,
@@ -44,7 +44,7 @@ export class AuthService {
       accessToken,
       refreshToken,
       id_token,
-    } = user;
+    } = user as GoogleLoginUserDto;
     const userData = await this.prisma.user.findFirst({
       where: { email },
       include: { accounts: true },

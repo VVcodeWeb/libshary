@@ -27,10 +27,13 @@
     "target": "es2022",
     "verbatimModuleSyntax": false,
     "paths": {
+      "@web/*": ["apps/web/src/*"],
       "@api/*": ["apps/api/src/*"],
       "@bookshary/prisma": ["libs/prisma/src/index.ts"],
       "@bookshary/shared-types": ["libs/shared-types/src/index.ts"],
-      "@web/*": ["apps/web/src/*"]
+
+      "api-e2e/*": ["apps/api-e2e/src/*"],
+      "web-e2e/*": ["apps/web-e2e/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

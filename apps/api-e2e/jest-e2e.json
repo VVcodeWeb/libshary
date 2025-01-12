@@ -1,0 +1,16 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@api/(.*)$": "<rootDir>/../api/src/$1",
+    "^@bookshary/prisma$": "<rootDir>/../../libs/prisma/src/index.ts",
+    "^@bookshary/shared-types$": "<rootDir>/../../libs/shared-types/src/index.ts",
+    "^api-e2e/(.*)$": "<rootDir>/$1"
+  },
+  "setupFiles": ["<rootDir>/jest.setup.ts"]
+}
