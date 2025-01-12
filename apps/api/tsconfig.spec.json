@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "ES2017",
+    "module": "CommonJS",
+    "composite": true,
+    "types": ["jest"]
+  },
+  "include": [
+    "src/**/*.ts", // Include application source files
+    "**/*.spec.ts", // Include test files
+    "**/*.d.ts",
+    "**/*.mock.ts"
+  ]
+}

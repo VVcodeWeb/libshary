@@ -35,7 +35,7 @@ export class ShelvesController {
     return this.shelvesService.findOne(id, user, includeAll);
   }
 
-  @Get('')
+  @Get()
   findAll(@User() user: AuthUser) {
     return this.shelvesService.findAll(user);
   }

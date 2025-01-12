@@ -20,11 +20,11 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true
   },
-  "include": [
-    "src/**/*.ts",
-    "../../libs/shared-types/src/lib/dto/create-shelf.dto.ts",
-    "../../libs/shared-types/src/lib/dto/update-shelf.dto.ts",
-    "../../libs/shared-types/src/lib/dto/create-book.dto.ts"
-  ],
-  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "jest-config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/__mocks__/**/*"
+  ]
 }
