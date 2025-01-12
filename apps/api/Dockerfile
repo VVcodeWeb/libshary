@@ -1,22 +1,17 @@
 FROM docker.io/node:lts-alpine as builder
+WORKDIR /app
 COPY dist/apps/api ./
-COPY libs/prisma ./prisma
-
-RUN npm install --omit=dev
-RUN npx prisma generate
+COPY libs/prisma/schema.prisma ./schema.prisma
+RUN npm ci && npx prisma generate
 
 
 FROM docker.io/node:lts-alpine as runner
-RUN apk add --no-cache dumb-init postgresql-client
+WORKDIR /app
 
+RUN apk add --no-cache dumb-init
 ENV NODE_ENV production
 ENV PORT 3000
-WORKDIR /usr/src/app
-
-
-COPY --from=builder . .
-COPY --from=builder package.json ./package.json
-
+COPY --from=builder /app .
 
 RUN chown -R node:node .
 USER node

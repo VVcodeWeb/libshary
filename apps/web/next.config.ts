@@ -1,10 +1,12 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+//@typescript-eslint/no-require-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { composePlugins, withNx } = require('@nx/next');
 
 const withNextIntl = createNextIntlPlugin();
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {

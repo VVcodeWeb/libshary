@@ -24,7 +24,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - run: npm ci --legacy-peer-deps
+      - run: npm ci --cache --prefer-offline
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected --target=lint
 
@@ -41,7 +41,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - run: npm ci --legacy-peer-deps
+      - run: npm ci --cache --prefer-offline
       - run: npx nx run prisma:generate
       - uses: nrwl/nx-set-shas@v4
 
@@ -61,7 +61,7 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - run: npm ci --legacy-peer-deps
+      - run: npm ci --cache --prefer-offline
       - run: npx nx run prisma:generate
 
       - uses: nrwl/nx-set-shas@v4
