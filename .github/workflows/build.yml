@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --cache --prefer-offline
 
+      - name: Generate Prisma client
+        run: npx nx run prisma:generate
+
       - name: Run build
         run: npx nx run api:build:production
 
@@ -46,6 +49,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --cache --prefer-offline
+
+      - name: Generate Prisma client
+        run: npx nx run prisma:generate
 
       - name: Run build
         run: npx nx run web:build:production

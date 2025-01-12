@@ -26,7 +26,7 @@ jobs:
 
       - run: npm ci --cache --prefer-offline
       - uses: nrwl/nx-set-shas@v4
-      - run: npx nx affected --target=lint
+      - run: npx nx affected --target=lint --base=$NX_BASE --head=$NX_HEAD
 
   unit-tests:
     name: Run unit tests
@@ -41,11 +41,16 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - run: npm ci --cache --prefer-offline
-      - run: npx nx run prisma:generate
+      - name: Install dependencies
+        run: npm ci --cache --prefer-offline
+
+      - name: Generate Prisma client
+        run: npx nx run prisma:generate
+
       - uses: nrwl/nx-set-shas@v4
 
-      - run: npx nx affected --target=test
+      - name: Run unit tests
+        run: npx nx affected --target=test --base=$NX_BASE --head=$NX_HEAD
 
   e2e-tests:
     name: Run e2e tests
@@ -65,4 +70,4 @@ jobs:
       - run: npx nx run prisma:generate
 
       - uses: nrwl/nx-set-shas@v4
-      - run: npx nx affected --target=e2e --exclude=api-e2e
+      - run: npx nx affected --target=e2e --exclude=api-e2e --base=$NX_BASE --head=$NX_HEAD
