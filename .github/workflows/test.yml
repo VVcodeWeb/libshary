@@ -61,7 +61,8 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - run: npx nx run prisma:generate
       - run: npm ci --legacy-peer-deps
+      - run: npx nx run prisma:generate
+
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected --target=e2e --exclude=api-e2e
