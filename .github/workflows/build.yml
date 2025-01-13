@@ -11,9 +11,12 @@ permissions:
   contents: read
 
 jobs:
-  api:
+  build:
     runs-on: ubuntu-latest
-    name: Build API
+    strategy:
+      matrix:
+        service: [api, web, booksearch]
+    name: Build ${{ matrix.service }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -30,31 +33,7 @@ jobs:
         run: npx nx run prisma:generate
 
       - name: Run build
-        run: npx nx run api:build:production
+        run: npx nx run ${{ matrix.service }}:build:production
 
       - name: Build Docker image
-        run: docker build -f apps/api/Dockerfile -t libshary-api:$GITHUB_SHA .
-
-  web:
-    runs-on: ubuntu-latest
-    name: Build Web
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci --cache --prefer-offline
-
-      - name: Generate Prisma client
-        run: npx nx run prisma:generate
-
-      - name: Run build
-        run: npx nx run web:build:production
-
-      - name: Build Docker image
-        run: docker build -f apps/web/Dockerfile -t libshary-web:$GITHUB_SHA .
+        run: docker build -f apps/${{ matrix.service }}/Dockerfile -t libshary-${{ matrix.service }}:$GITHUB_SHA .
