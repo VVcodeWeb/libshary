@@ -1,5 +1,5 @@
 {
-  "name": "@bookshary/prisma",
+  "name": "@libshary/prisma",
   "version": "0.0.1",
   "dependencies": {},
   "private": true,

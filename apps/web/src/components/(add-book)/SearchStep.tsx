@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { BookSearchItem } from './BookSearchItem';
 import { useAddBookSteps } from '@web/hooks/useAddBookSteps';
 import { searchBooks } from '@web/actions/books/queries';
-import { TransientBookModel } from '@bookshary/shared-types';
+import { TransientBookModel } from '@libshary/shared-types';
 
 export const SearchStep = () => {
   const [searchValue, setSearchValue] = useState<string>('');

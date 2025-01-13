@@ -11,7 +11,7 @@ import {
   ShelfWithSections,
   ShelfWithSectionsBooks,
   UpdateShelfDto,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
 import { Section, Shelf } from '@prisma/client';
 
 //TODO: move it

@@ -1,4 +1,4 @@
-import { BookWithSection } from '@bookshary/shared-types';
+import { BookWithSection } from '@libshary/shared-types';
 import { Section } from '@prisma/client';
 import Image from 'next/image';
 import { SectionHeader } from './SectionHeader';

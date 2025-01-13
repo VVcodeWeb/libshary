@@ -4,7 +4,7 @@ import {
   UpdateSectionDto,
   CreateSectionBookDto,
   UpdateSectionBookDto,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
 import { SectionsService } from '../sections.service';
 
 class SectionsMock {

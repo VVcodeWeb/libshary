@@ -1,4 +1,4 @@
-import { TransientBookModel, ShelfWithSections } from '@bookshary/shared-types';
+import { TransientBookModel, ShelfWithSections } from '@libshary/shared-types';
 import { Shelf } from '@prisma/client';
 import { useSteps } from '@web/providers/StepsProvider';
 

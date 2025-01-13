@@ -6,22 +6,26 @@ import {
 } from '@nestjs/common';
 import { AuthUser } from '@api/shared/models/user.model';
 import { PrismaService } from '../prisma/prisma.service';
-import { BookSearchService } from '../book-search/book-search.service';
 import { firstValueFrom } from 'rxjs';
 import {
   CreateSectionBookDto,
   CreateSectionDto,
   SearchApi,
+  TransientBookModel,
   UpdateSectionBookDto,
   UpdateSectionDto,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
+import { HttpService } from '@nestjs/axios';
+import { ConfigurationService } from '@api/config/configuration.service';
+import { AxiosError } from 'axios';
 
 //TODO: CRUD handle different prisma errors
 @Injectable()
 export class SectionsService {
   constructor(
     private readonly prisma: PrismaService,
-    private bookSearchService: BookSearchService,
+    private httpService: HttpService,
+    private configurationService: ConfigurationService,
   ) {}
   private logger = new Logger(SectionsService.name);
 
@@ -114,22 +118,35 @@ export class SectionsService {
     if (!this.#userHasAccessToSection(sectionId, user.id)) {
       this.#throwNotFoundOrNoPermission(sectionId);
     }
+    const googleBookId = createSectionBookDto.googleBookId;
     const bookExists = await this.prisma.book.findUnique({
       where: {
-        googleBookId: createSectionBookDto.googleBookId,
+        googleBookId,
       },
     });
-    if (!bookExists) {
-      const book = await firstValueFrom(
-        this.bookSearchService.findById(
-          createSectionBookDto.googleBookId,
-          SearchApi.google_books,
-        ),
+    if (bookExists) {
+      return this.prisma.sectionBook.create({
+        data: {
+          bookId: bookExists.id,
+          sectionId,
+        },
+      });
+    }
+
+    const bookSearchUrl = this.configurationService.book_search_url.concat(
+      '/book/',
+      googleBookId,
+      `?api=${SearchApi.google_books}`,
+    );
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(bookSearchUrl),
       );
+      const book = response.data as TransientBookModel;
       if (!book) {
-        throw new BadRequestException(
-          `Book with id ${createSectionBookDto.googleBookId} not found in Google Books API or database`,
-        );
+        throw new BadRequestException({
+          message: `BOOK_NOT_FOUND`,
+        });
       }
       return this.prisma.sectionBook.create({
         data: {
@@ -146,13 +163,30 @@ export class SectionsService {
           },
         },
       });
-    } else {
-      return this.prisma.sectionBook.create({
-        data: {
-          bookId: bookExists.id,
-          sectionId,
-        },
-      });
+    } catch (error) {
+      if (
+        error instanceof BadRequestException &&
+        error.message === 'BOOK_NOT_FOUND'
+      ) {
+        throw new BadRequestException(
+          `Book with id ${googleBookId} not found in Google Books API or database`,
+        );
+      }
+      if (error instanceof AxiosError) {
+        this.logger.error(
+          `HTTP request to book search service failed. 
+         URL: ${bookSearchUrl}, 
+         Status: ${error.response?.status || 'unknown'}, 
+         Message: ${error.message}`,
+        );
+        throw new InternalServerErrorException(
+          `Unable to fetch book with id ${googleBookId} details from the book search service. Please try again later.`,
+        );
+      }
+      this.logger.error(
+        `Unexpected error while creating section book. Message: ${error}`,
+      );
+      throw new InternalServerErrorException(`Error creating section book`);
     }
   }
 

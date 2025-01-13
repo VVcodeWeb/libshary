@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "types": ["node"],
+    "declaration": true,
+    "target": "es2021",
+    "composite": true
+  },
+  "include": ["src/**/*.ts", "../../libs/shared-types/src/**/*.ts"],
+  "exclude": ["src/test.ts", "**/*.spec.ts"]
+}

@@ -1,5 +1,5 @@
 'use client';
-import { TransientBookModel } from '@bookshary/shared-types';
+import { TransientBookModel } from '@libshary/shared-types';
 import Image from 'next/image';
 type BookItem = {
   book: TransientBookModel;

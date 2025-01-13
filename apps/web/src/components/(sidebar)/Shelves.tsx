@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { AddShelfModalWrapper } from '../(add-shelf)/AddShelfModalWrapper';
-import { ShelfWithSections } from '@bookshary/shared-types';
+import { ShelfWithSections } from '@libshary/shared-types';
 import { useAddShelfSteps } from '@web/hooks/useAddShelfSteps';
 import { PlusIcon } from '@web/components/(icons)/PlusIcon';
 import { ShelvesList } from './ShelvesList';

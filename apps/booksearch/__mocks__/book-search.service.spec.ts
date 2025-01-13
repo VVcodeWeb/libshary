@@ -1,6 +1,5 @@
-import { SearchApi, TransientBookModel } from '@bookshary/shared-types';
+import { SearchApi, TransientBookModel } from '@libshary/shared-types';
 import { Observable, of } from 'rxjs';
-import { BookSearchService } from '../book-search.service';
 export class BookSearchMock {
   search(query: string, api: SearchApi): Observable<TransientBookModel[]> {
     return of([
@@ -26,7 +25,3 @@ export class BookSearchMock {
     });
   }
 }
-export const BookSearchServiceMock = {
-  provide: BookSearchService,
-  useValue: BookSearchMock,
-};

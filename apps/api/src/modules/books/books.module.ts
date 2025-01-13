@@ -4,10 +4,9 @@ import { BooksController } from './books.controller';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigurationModule } from '@api/config/configuration.module';
 import { PrismaModule } from '@api/modules/prisma/prisma.module';
-import { BookSearchModule } from '../book-search/book-search.module';
 
 @Module({
-  imports: [HttpModule, ConfigurationModule, PrismaModule, BookSearchModule],
+  imports: [HttpModule, ConfigurationModule, PrismaModule],
   controllers: [BooksController],
   providers: [BooksService],
 })

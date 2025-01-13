@@ -1,5 +1,5 @@
 'use server';
-import { createShelfSchema } from '@bookshary/shared-types';
+import { createShelfSchema } from '@libshary/shared-types';
 import api from '@web/lib/nest-api';
 import { revalidatePath } from 'next/cache';
 

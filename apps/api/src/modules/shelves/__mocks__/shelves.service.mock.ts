@@ -3,7 +3,7 @@ import {
   CreateShelfDto,
   UpdateShelfDto,
   ShelfWithSections,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
 import { Shelf, Section } from '@prisma/client';
 import { ShelvesService } from '../shelves.service';
 

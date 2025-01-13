@@ -9,15 +9,6 @@ export class ConfigurationService {
   get jwt_secret() {
     return this.configService.get<string>('jwt_secret') as string;
   }
-  get google_books_url() {
-    return this.configService.get<string>('google_books_url') as string;
-  }
-  get google_books_api_key() {
-    return this.configService.get<string>('google_books_api_key') as string;
-  }
-  get open_libary_url() {
-    return this.configService.get<string>('open_libary_url') as string;
-  }
   get data() {
     return this.configService.get<string>('process_api_data') as string;
   }
@@ -29,5 +20,8 @@ export class ConfigurationService {
   }
   get google_redirect_url() {
     return this.configService.get<string>('google_redirect_url') as string;
+  }
+  get book_search_url() {
+    return this.configService.get<string>('book_search_url') as string;
   }
 }

@@ -11,7 +11,7 @@ import {
   UpdateShelfDto,
   CreateShelfDto,
   shelfQuerySchema,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
 
 @UseGuards(JwtAuthGuard)
 @Controller('shelves')

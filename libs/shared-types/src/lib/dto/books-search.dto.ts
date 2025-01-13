@@ -1,18 +1,10 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { z } from 'zod';
 import { SearchApi } from '../models/search-api.model';
-
-export class BookQueryDtoLegacy {
-  @IsString()
-  @IsNotEmpty()
-  q!: string;
-
-  @IsEnum(SearchApi)
-  api!: string;
-}
 export const BookQueryScheme = z.object({
   q: z.string().nonempty(),
-  api: z.nativeEnum(SearchApi),
+  api: z.nativeEnum(SearchApi).optional(),
+  limit: z.number().optional(),
+  offset: z.number().optional(),
 });
 
 export type BookQueryDto = z.infer<typeof BookQueryScheme>;

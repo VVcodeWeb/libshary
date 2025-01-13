@@ -1,14 +1,12 @@
 const configuration = (): ConfigurationType => ({
   jwt_secret: process.env.JWT_SECRET || 'secret',
-  google_books_url: 'https://www.googleapis.com/books/v1',
-  google_books_api_key: process.env.GOOGLE_BOOKS_API_KEY as string,
   google_client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
   google_client_id: process.env.GOOGLE_CLIENT_ID as string,
+  book_search_url:
+    (process.env.BOOK_SEARCH_URL as string) || 'http://localhost:3001',
   google_redirect_url:
     (process.env.GOOGLE_REDIRECT_URL as string) ||
     'http://localhost:3000/auth/google/redirect',
-  open_libary_url: 'https://openlibrary.org/search.json',
-
   process_api_data:
     !process.env.DATA || process.env.NODE_ENV === 'production'
       ? false
@@ -17,20 +15,15 @@ const configuration = (): ConfigurationType => ({
 
 export interface ConfigurationType {
   jwt_secret: string;
-  google_books_url: string;
-  google_books_api_key: string;
-  open_libary_url: string;
   process_api_data: boolean;
   google_client_secret: string;
   google_client_id: string;
   google_redirect_url: string;
+  book_search_url: string;
 }
 
 export const validate = (config: Record<string, any>) => {
   const missing: string[] = [];
-  if (!config.GOOGLE_BOOKS_API_KEY) {
-    missing.push('Missing GOOGLE_BOOKS_API_KEY in environment');
-  }
   if (missing.length > 0) {
     throw new Error(`Missing configuration: ${missing.join(', ')}`);
   }

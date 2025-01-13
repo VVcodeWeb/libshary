@@ -1,9 +1,9 @@
-import { GoogleBooksVolume } from '@api/modules/book-search/models/google-books.model';
-import { OpenLibBook } from '@api/modules/book-search/models/openlib-books.model';
 import {
   TransientBookModel,
   TransientBookSchema,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
+import { GoogleBooksVolume } from '../dto/google-books';
+import { OpenLibBook } from '../dto/openlib-books';
 
 export const googleToTransientBook = (
   googleBook: GoogleBooksVolume,

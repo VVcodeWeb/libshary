@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { Shelves } from './Shelves';
-import { ShelfWithSections } from '@bookshary/shared-types';
+import { ShelfWithSections } from '@libshary/shared-types';
 import { HomeNav } from './HomeNav';
 import { ExploreNav } from './ExploreNav';
 import { SquaresIcon } from '../(icons)/SquaresIcon';

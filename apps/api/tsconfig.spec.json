@@ -8,5 +8,11 @@
     "composite": true,
     "types": ["jest"]
   },
-  "include": ["src/**/*.ts", "**/*.spec.ts", "**/*.d.ts", "**/*.mock.ts"]
+  "include": [
+    "src/**/*.ts",
+    "**/*.spec.ts",
+    "**/*.d.ts",
+    "**/*.mock.ts",
+    "../booksearch/src/app/mappers/books-mapper.ts"
+  ]
 }

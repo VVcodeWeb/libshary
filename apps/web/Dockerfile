@@ -18,13 +18,16 @@ COPY --from=base /app/node_modules/.prisma/client /app/node_modules/.prisma/clie
 
 FROM node:lts-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production
+ARG NODE_ENV
+ARG PORT
+
+ENV NODE_ENV=$NODE_ENV
+ENV PORT=$PORT
 
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/ ./
 
 USER nextjs
-EXPOSE 4200
-ENV PORT=4200
+EXPOSE $PORT
 
 CMD ["node", "apps/web/server.js"]

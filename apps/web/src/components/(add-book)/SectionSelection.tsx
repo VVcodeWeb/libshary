@@ -1,5 +1,5 @@
 'use client';
-import { ShelfWithSections } from '@bookshary/shared-types';
+import { ShelfWithSections } from '@libshary/shared-types';
 
 interface SectionSelectionProps {
   sections: ShelfWithSections['sections'];

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SearchApi } from '@bookshary/shared-types';
+import { SearchApi } from '@libshary/shared-types';
 import { BooksService } from '../books.service';
 
 class BooksMock {

@@ -21,7 +21,7 @@ import {
   updateSectionBookSchema,
   UpdateSectionDto,
   updateSectionSchema,
-} from '@bookshary/shared-types';
+} from '@libshary/shared-types';
 import { ZodPipe } from '@api/shared/pipes/zod.pipe';
 
 @UseGuards(JwtAuthGuard)

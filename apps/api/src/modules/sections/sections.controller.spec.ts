@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SectionsController } from './sections.controller';
-import { SectionsService } from './sections.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { BookSearchServiceMock } from '../book-search/__mocks__/book-search.service.mock';
 import { JwtAuthGuardMock } from '../auth/__mocks__/jwt-auth.guard.mock';
 import { SectionsServiceMock } from './__mocks__/sections.service.mock';
 
@@ -12,7 +10,7 @@ describe('SectionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SectionsController],
-      providers: [SectionsServiceMock, BookSearchServiceMock],
+      providers: [SectionsServiceMock],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue(JwtAuthGuardMock)

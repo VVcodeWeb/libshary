@@ -1,6 +1,6 @@
 'use server';
 
-import { createSectionBookSchema } from '@bookshary/shared-types';
+import { createSectionBookSchema } from '@libshary/shared-types';
 import api from '@web/lib/nest-api';
 import { revalidatePath } from 'next/cache';
 

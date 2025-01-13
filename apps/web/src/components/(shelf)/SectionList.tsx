@@ -1,7 +1,7 @@
 'use client';
 import { SectionView } from './SectionView';
 import { Section } from '@prisma/client';
-import { BookWithSection } from '@bookshary/shared-types';
+import { BookWithSection } from '@libshary/shared-types';
 import { AddBookModalWrapper } from '../(add-book)/AddBookModalWrapper';
 
 interface SectionListProps {

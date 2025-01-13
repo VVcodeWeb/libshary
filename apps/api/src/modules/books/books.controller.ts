@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { JwtAuthGuard } from '@api/modules/auth/guards/jwt.guard';
-import { SearchApi } from '@bookshary/shared-types';
+import { SearchApi } from '@libshary/shared-types';
 
 @UseGuards(JwtAuthGuard)
 @Controller('books')

@@ -2,7 +2,7 @@
 
 import api from '@web/lib/nest-api';
 import { AxiosError } from 'axios';
-import { BookWithSection, ShelfWithSections } from '@bookshary/shared-types';
+import { BookWithSection, ShelfWithSections } from '@libshary/shared-types';
 import { Section, Shelf } from '@prisma/client';
 
 export const getShelfs = async (): Promise<

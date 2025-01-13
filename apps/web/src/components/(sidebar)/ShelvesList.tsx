@@ -1,4 +1,4 @@
-import { ShelfWithSections } from '@bookshary/shared-types';
+import { ShelfWithSections } from '@libshary/shared-types';
 import { ShelfItem } from '../(shelf)/ShelfItem';
 import { Accordion } from '../(ui)/Accordion';
 import { useParams } from 'next/navigation';
