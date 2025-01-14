@@ -1,6 +1,7 @@
 'use server';
 
 import {
+  BookQueryReponseDto,
   TransientBookModel,
   TransientBookSchema,
 } from '@libshary/shared-types';
@@ -10,8 +11,9 @@ export const searchBooks = async (
   query: string,
 ): Promise<TransientBookModel[]> => {
   const response = await api.get(`/books/search?q=${query}`);
-  console.log(response.data);
-  const books = response.data.map((book: TransientBookModel) =>
+  const data = response?.data as BookQueryReponseDto;
+  if (data.total_number === 0) return [];
+  const books = data.result.map((book: TransientBookModel) =>
     TransientBookSchema.parse(book),
   );
 

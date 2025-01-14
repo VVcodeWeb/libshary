@@ -1,0 +1,8 @@
+scrape_configs:
+  - job_name: 'api'
+    static_configs:
+      - targets: ['libshary_api:3000']
+
+  - job_name: 'booksearch'
+    static_configs:
+      - targets: ['libshary_booksearch:3001']

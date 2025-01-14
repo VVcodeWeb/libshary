@@ -44,9 +44,10 @@ export class BooksService {
     if (api) url += `&api=${api}`;
     try {
       const response = await firstValueFrom(this.httpService.get(url));
+      this.logger.log(`HTTP request to book search service succeeded`);
       return response.data;
     } catch (error) {
-      this.logger.error(`HTTP request to book search service failed`);
+      this.logger.error(`HTTP request to book search service failed`, error);
       throw new InternalServerErrorException(
         `HTTP request to book search service failed`,
       );

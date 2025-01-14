@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BooksModule } from '@api/modules/books/books.module';
 import { ConfigurationModule } from './config/configuration.module';
 import { SectionsModule } from './modules/sections/sections.module';
+import { MetricsModule } from './modules/metrics/metrics.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SectionsModule } from './modules/sections/sections.module';
     BooksModule,
     ConfigurationModule,
     SectionsModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

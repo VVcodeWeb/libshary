@@ -36,3 +36,18 @@ export const openLibBookFields: (keyof OpenLibBook)[] = [
   'title',
   'number_of_pages_median',
 ];
+
+/**
+ * Query parameters for OpenLibrary API
+ *
+ * https://openlibrary.org/dev/docs/api/search
+ *
+ * TODO: map search by subject, author, etc https://openlibrary.org/search/howto
+ */
+export class OpenLibSearchQuery {
+  q!: string; // Full-text query string
+  limit!: number; // Max elements to return (Default: 10, Max: 40)
+  offset!: number; // Position to start the list of results (index starts at 0)
+  sort?: 'new' | 'old' | 'random' | 'key';
+  fields?: string[]; // Fields to return
+}

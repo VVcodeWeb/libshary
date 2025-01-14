@@ -7,14 +7,17 @@ declare module 'fastify' {
     rabbitmq: amqp.Channel;
   }
 }
+interface RabbitMqOptions {
+  rabbitmq_url: string;
+}
 
-async function rabbitmq(fastify: FastifyInstance) {
+async function rabbitmq(fastify: FastifyInstance, options: RabbitMqOptions) {
   try {
-    const connection = await amqp.connect(fastify.config.rabbitmq_url);
+    const rabbitmq_url = options.rabbitmq_url ?? fastify.config.rabbitmq_url;
+    // fastify.log.info(`rabbitmq options ${JSON.stringify(options)}`);
+    const connection = await amqp.connect(rabbitmq_url);
     const channel = await connection.createChannel();
-
     fastify.decorate('rabbitmq', channel);
-
     fastify.addHook('onClose', (fastifyInstance, done) => {
       connection.close();
       done();
@@ -24,5 +27,11 @@ async function rabbitmq(fastify: FastifyInstance) {
     process.exit(1);
   }
 }
+//TODO: auto config doesnt as function
+export const autoConfig = (fastify: FastifyInstance) => {
+  return {
+    rabbitmq_url: fastify.config.rabbitmq_url,
+  };
+};
 
-export default fp(rabbitmq, { name: 'rabbitmq' });
+export default fp(rabbitmq, { name: 'rabbitmq', dependencies: ['config'] });

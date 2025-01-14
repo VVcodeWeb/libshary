@@ -19,15 +19,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
     ConfigurationModule,
   ],
-  providers: [
-    AuthService,
-    GoogleStrategy,
-    JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [AuthService, GoogleStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
