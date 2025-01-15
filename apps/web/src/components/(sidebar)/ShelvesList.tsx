@@ -12,20 +12,22 @@ export const ShelvesList = ({ shelves }: ShelvesListProps) => {
   return (
     <div className="space-y-3 join join-vertical">
       {shelves?.map((shelf) => (
-        <Accordion
-          key={shelf.id}
-          name="shelves-accordion"
-          arrowPosition="left"
-          highlight={params.shelf === shelf.id}
-          title={<ShelfItem shelf={shelf} />}
-        >
-          {shelf.sections.map((section) => (
-            <div key={section.id} className="p-3">
-              <article className="line-clamp-1 prose-sm">
-                {section.name}
-              </article>
-            </div>
-          ))}
+        <Accordion key={shelf.id}>
+          <Accordion.Title
+            highlight={params.shelf === shelf.id}
+            arrowPosition="left"
+          >
+            <ShelfItem shelf={shelf} />
+          </Accordion.Title>
+          <Accordion.Content>
+            {shelf.sections.map((section) => (
+              <div key={section.id} className="p-3">
+                <article className="line-clamp-1 prose-sm">
+                  {section.name}
+                </article>
+              </div>
+            ))}
+          </Accordion.Content>
         </Accordion>
       ))}
     </div>

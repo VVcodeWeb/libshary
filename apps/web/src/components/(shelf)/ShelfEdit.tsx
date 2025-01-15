@@ -7,9 +7,14 @@ type ShelfEditProps = unknown;
 export const ShelfEdit = () => {
   const t = useTranslations('common');
   return (
-    <Dropdown button={<EllipsisIcon className="w-6 cursor-pointer" />}>
-      <li>{t('delete')}</li>
-      <li>{t('edit')}</li>
+    <Dropdown>
+      <Dropdown.Button>
+        <EllipsisIcon className="w-6 cursor-pointer" />
+      </Dropdown.Button>
+      <Dropdown.Menu>
+        <li>{t('delete')}</li>
+        <li>{t('edit')}</li>
+      </Dropdown.Menu>
     </Dropdown>
   );
 };

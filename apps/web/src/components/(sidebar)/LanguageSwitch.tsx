@@ -21,20 +21,25 @@ export const LanguageSwitch = () => {
   };
 
   return (
-    <Dropdown button={<LanguageIcon />}>
-      {routing.locales.map((locale) => {
-        const isCurrent = locale === currentLocale;
-        return (
-          <HighlightUi on={isCurrent} key={locale}>
-            <div
-              className="p-3 cursor-pointer"
-              onClick={() => !isCurrent && !isPending && onSelect(locale)}
-            >
-              {locale}
-            </div>
-          </HighlightUi>
-        );
-      })}
+    <Dropdown>
+      <Dropdown.Button>
+        <LanguageIcon />
+      </Dropdown.Button>
+      <Dropdown.Menu>
+        {routing.locales.map((locale) => {
+          const isCurrent = locale === currentLocale;
+          return (
+            <HighlightUi on={isCurrent} key={locale}>
+              <div
+                className="p-3 cursor-pointer"
+                onClick={() => !isCurrent && !isPending && onSelect(locale)}
+              >
+                {locale}
+              </div>
+            </HighlightUi>
+          );
+        })}
+      </Dropdown.Menu>
     </Dropdown>
   );
 };

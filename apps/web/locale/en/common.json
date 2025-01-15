@@ -24,5 +24,13 @@
       "author-placeholder": "Enter author name",
       "description-placeholder": "Enter description (optional)"
     }
+  },
+  "section-modal": {
+    "button": "Add section",
+    "details": {
+      "title": "Create a section",
+      "name-placeholder": "Enter section name",
+      "description-placeholder": "Enter description (optional)"
+    }
   }
 }

@@ -20,24 +20,26 @@ export const UserImageDropdown = () => {
   const t = useTranslations('common.sidebar');
 
   return (
-    <Dropdown
-      position="right"
-      button={<UserImage src={data?.user?.image as string} />}
-    >
-      <div className="flex gap-2">
+    <Dropdown position="right">
+      <Dropdown.Button>
         <UserImage src={data?.user?.image as string} />
-        <div>
-          <p>{data?.user?.name}</p>
+      </Dropdown.Button>
+      <Dropdown.Menu>
+        <div className="flex gap-2">
+          <UserImage src={data?.user?.image as string} />
+          <div>
+            <p>{data?.user?.name}</p>
+          </div>
         </div>
-      </div>
-      <hr className="my-4 border-gray-200" />
-      <ul className="space-y-4">
-        <li>{t('settings')}</li>
-        <li>{t('privacy')}</li>
-        <li onClick={() => signOut()} className="cursor-pointer">
-          {t('logout')}
-        </li>
-      </ul>
+        <hr className="my-4 border-gray-200" />
+        <ul className="space-y-4">
+          <li>{t('settings')}</li>
+          <li>{t('privacy')}</li>
+          <li onClick={() => signOut()} className="cursor-pointer">
+            {t('logout')}
+          </li>
+        </ul>
+      </Dropdown.Menu>
     </Dropdown>
   );
 };

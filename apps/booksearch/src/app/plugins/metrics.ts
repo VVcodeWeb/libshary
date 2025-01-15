@@ -33,7 +33,7 @@ async function promMetrics(fastify: FastifyInstance) {
 
   fastify.get('/metrics', async (req, reply) => {
     reply.header('Content-Type', register.contentType);
-    return register.metrics();
+    return await register.metrics();
   });
   fastify.addHook('onRequest', (req, reply, done) => {
     const { method, status, url } = retrieveRequestData(req, reply);

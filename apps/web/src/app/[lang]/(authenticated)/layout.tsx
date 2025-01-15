@@ -1,5 +1,5 @@
 import { getShelfs } from '@web/actions/shelves/queries';
-import SideBar from '@web/components/(sidebar)/SideBar';
+import { Sidebar } from '@web/components/(sidebar)/SideBar';
 
 export default async function ShelvesLayout({
   children,
@@ -12,7 +12,7 @@ export default async function ShelvesLayout({
   }
   return (
     <div className="flex h-full">
-      <SideBar shelves={shelves} />
+      <Sidebar shelves={shelves} />
       <div className="flex-grow bg-base-100">{children}</div>
     </div>
   );

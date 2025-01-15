@@ -1,8 +1,8 @@
 'use client';
 import { BookSearchItem } from './BookSearchItem';
 import { useAddBookSteps } from '@web/hooks/useAddBookSteps';
-import { createSectionBook } from '@web/actions/books/mutations';
 import { SectionSelection } from './SectionSelection';
+import { createSectionBook } from '@web/actions/sections/mutations';
 
 export const DetailsStep = () => {
   const { data, updateData, navigateToStep, closeModal } = useAddBookSteps();
