@@ -21,6 +21,9 @@ export default {
         sidebar: '18rem',
         'sidebar-collapsed': '4rem',
       },
+      height: {
+        header: '3.5rem' /* 56px */,
+      },
     },
   },
 } satisfies Config;

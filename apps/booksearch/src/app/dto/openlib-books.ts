@@ -45,7 +45,7 @@ export const openLibBookFields: (keyof OpenLibBook)[] = [
  * TODO: map search by subject, author, etc https://openlibrary.org/search/howto
  */
 export class OpenLibSearchQuery {
-  q!: string; // Full-text query string
+  q?: string; // Full-text query string
   limit!: number; // Max elements to return (Default: 10, Max: 40)
   offset!: number; // Position to start the list of results (index starts at 0)
   sort?: 'new' | 'old' | 'random' | 'key';

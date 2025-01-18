@@ -5,7 +5,7 @@ import {
   TransientBookModel,
   TransientBookSchema,
 } from '@libshary/shared-types';
-import api from '@web/lib/nest-api';
+import api from '@web/lib/api/nest-api';
 
 export const searchBooks = async (
   query: string,

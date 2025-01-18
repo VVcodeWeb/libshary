@@ -23,7 +23,7 @@
     "skipDefaultLibCheck": false,
     "skipLibCheck": true,
     "sourceMap": false,
-    "strict": true,
+    "strict": false,
     "target": "es2022",
     "verbatimModuleSyntax": false,
     "paths": {

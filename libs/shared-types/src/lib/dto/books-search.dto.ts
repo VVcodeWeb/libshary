@@ -2,7 +2,7 @@ import { number, z } from 'zod';
 import { SearchApi } from '../models/search-api.model';
 import { TransientBookSchema } from '../models';
 export const BookQueryRequestSchema = z.object({
-  q: z.string().nonempty(),
+  q: z.string().optional(),
   api: z.nativeEnum(SearchApi).optional(),
   limit: z.number().optional(),
   offset: z.number().optional(),

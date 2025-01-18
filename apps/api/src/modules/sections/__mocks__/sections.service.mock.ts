@@ -5,7 +5,7 @@ import {
   CreateSectionBookDto,
   UpdateSectionBookDto,
 } from '@libshary/shared-types';
-import { SectionsService } from '../sections.service';
+import { SectionsService } from '../sections-legacy.service';
 
 class SectionsMock {
   create(createSectionDto: CreateSectionDto, user: AuthUser) {

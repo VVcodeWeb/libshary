@@ -1,0 +1,41 @@
+import { ShelfWithSections } from '@libshary/shared-types';
+import { useParams } from 'next/navigation';
+import { ShelfLabel } from '../shelf/ShelfLabel';
+import { Accordion } from '../ui/Accordion';
+
+interface ShelvesListProps {
+  shelves: ShelfWithSections[];
+}
+export const ShelvesList = ({ shelves }: ShelvesListProps) => {
+  const params = useParams<{ shelf: string }>();
+
+  return (
+    <div className="space-y-3 join join-vertical">
+      {shelves?.map((shelf) => (
+        <Accordion key={shelf.id}>
+          <Accordion.Title
+            highlight={params.shelf === shelf.id}
+            arrowPosition="left"
+          >
+            <ShelfLabel
+              containerClassName="w-full"
+              editable={false}
+              shelf={shelf}
+              showPrivate
+              withLink
+            />
+          </Accordion.Title>
+          <Accordion.Content>
+            {shelf.sections.map((section) => (
+              <div key={section.id} className="p-3">
+                <article className="line-clamp-1 prose-sm">
+                  {section.name}
+                </article>
+              </div>
+            ))}
+          </Accordion.Content>
+        </Accordion>
+      ))}
+    </div>
+  );
+};

@@ -1,5 +1,5 @@
-import SignInButton from '@web/components/(auth)/SignInButton';
-import { Link } from '@web/i18n/routing';
+import SignInButton from '@web/components/auth/SignInButton';
+import { Link } from '@web/lib/i18n/routing';
 import { useTranslations } from 'next-intl';
 
 export default function LandingPage() {

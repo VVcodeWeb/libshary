@@ -3,250 +3,116 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthUser } from '@api/shared/models/user.model';
-import { PrismaService } from '../prisma/prisma.service';
-import { firstValueFrom } from 'rxjs';
-import {
-  CreateSectionBookDto,
-  CreateSectionDto,
-  SearchApi,
-  TransientBookModel,
-  UpdateSectionBookDto,
-  UpdateSectionDto,
-} from '@libshary/shared-types';
-import { HttpService } from '@nestjs/axios';
-import { ConfigurationService } from '@api/config/configuration.service';
-import { AxiosError } from 'axios';
+import { CreateSectionInput, UpdateSectionInput } from './dto/sections.input';
+import { SectionsRepository } from './sections.repository';
+import { AuthorizationService } from '@api/shared/services/authorization.service';
 
-//TODO: CRUD handle different prisma errors
 @Injectable()
 export class SectionsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private httpService: HttpService,
-    private configurationService: ConfigurationService,
-  ) {}
   private logger = new Logger(SectionsService.name);
+  constructor(
+    private sectionsRepository: SectionsRepository,
+    private authorizationService: AuthorizationService,
+  ) {}
 
-  async create(createSectionDto: CreateSectionDto, user: AuthUser) {
-    const shelf = await this.prisma.shelf.findUnique({
-      where: {
-        id: createSectionDto.shelfId,
-        ownerId: user.id,
-      },
-    });
-    if (!shelf) {
-      throw new BadRequestException(
-        `Shelf with id ${createSectionDto.shelfId} not found or you do not have permission to access it`,
-      );
-    }
-    return this.prisma.section
-      .create({
-        data: {
-          name: createSectionDto.name,
-          shelfId: shelf.id,
-        },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        throw new InternalServerErrorException(`Error creating section`);
-      });
-  }
-
-  async update(id: string, updateSectionDto: UpdateSectionDto, user: AuthUser) {
-    return this.prisma.section
-      .update({
-        where: {
-          id,
-          shelf: {
-            ownerId: user.id,
-          },
-        },
-        data: {
-          ...updateSectionDto,
-        },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        throw new InternalServerErrorException(`Error updating section ${id}`);
-      });
-  }
-
-  async remove(id: string, user: AuthUser) {
-    return this.prisma.section
-      .delete({
-        where: {
-          id,
-          shelf: {
-            ownerId: user.id,
-          },
-        },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        throw new InternalServerErrorException(`Error removing section ${id}`);
-      });
-  }
-
-  async findSectionBooks(sectionId: string, user: AuthUser) {
-    return this.prisma.sectionBook
-      .findMany({
-        where: {
-          sectionId,
-          section: {
-            shelf: {
-              ownerId: user.id,
-            },
-          },
-        },
-        include: {
-          book: true,
-        },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        throw new InternalServerErrorException(e);
-      });
-  }
-
-  async createSectionBook(
-    sectionId: string,
-    createSectionBookDto: CreateSectionBookDto,
-    user: AuthUser,
-  ) {
-    if (!this.#userHasAccessToSection(sectionId, user.id)) {
-      this.#throwNotFoundOrNoPermission(sectionId);
-    }
-    const googleBookId = createSectionBookDto.googleBookId;
-    const bookExists = await this.prisma.book.findUnique({
-      where: {
-        googleBookId,
-      },
-    });
-    if (bookExists) {
-      return this.prisma.sectionBook.create({
-        data: {
-          bookId: bookExists.id,
-          sectionId,
-        },
-      });
-    }
-
-    const bookSearchUrl = this.configurationService.book_search_url.concat(
-      '/book/',
-      googleBookId,
-      `?api=${SearchApi.google_books}`,
+  async create(createSectionInput: CreateSectionInput, user: AuthUser) {
+    const hasAccess = await this.authorizationService.userHasAccessToShelf(
+      createSectionInput.shelfId,
+      user.id,
     );
-    try {
-      const response = await firstValueFrom(
-        this.httpService.get(bookSearchUrl),
+    if (!hasAccess) {
+      throw new BadRequestException(
+        'Shelf not found or user does not have access to shelf',
       );
-      const book = response.data as TransientBookModel;
-      if (!book) {
-        throw new BadRequestException({
-          message: `BOOK_NOT_FOUND`,
-        });
-      }
-      return this.prisma.sectionBook.create({
-        data: {
-          book: {
-            connectOrCreate: {
-              where: { googleBookId: book.googleBookId },
-              create: book,
-            },
-          },
-          section: {
-            connect: {
-              id: sectionId,
-            },
+    }
+    return this.sectionsRepository.create({
+      data: {
+        ...createSectionInput,
+      },
+    });
+  }
+
+  async findOne(id: string, user: AuthUser) {
+    const section = await this.sectionsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    const hasAccess =
+      section &&
+      (await this.authorizationService.userHasAccessToSection(
+        section.id,
+        user.id,
+      ));
+
+    if (!hasAccess) {
+      this.#throwNotFoundOrNoPermission(id);
+    }
+    return section;
+  }
+
+  async findAll(user: AuthUser) {
+    try {
+      return this.sectionsRepository.findAll({
+        where: {
+          shelf: {
+            ownerId: user.id,
           },
         },
       });
     } catch (error) {
-      if (
-        error instanceof BadRequestException &&
-        error.message === 'BOOK_NOT_FOUND'
-      ) {
-        throw new BadRequestException(
-          `Book with id ${googleBookId} not found in Google Books API or database`,
-        );
-      }
-      if (error instanceof AxiosError) {
-        this.logger.error(
-          `HTTP request to book search service failed. 
-         URL: ${bookSearchUrl}, 
-         Status: ${error.response?.status || 'unknown'}, 
-         Message: ${error.message}`,
-        );
-        throw new InternalServerErrorException(
-          `Unable to fetch book with id ${googleBookId} details from the book search service. Please try again later.`,
-        );
-      }
-      this.logger.error(
-        `Unexpected error while creating section book. Message: ${error}`,
-      );
-      throw new InternalServerErrorException(`Error creating section book`);
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error finding sections');
     }
   }
 
-  async updateSectionBook(
-    sectionId: string,
-    updateSectionBookDto: UpdateSectionBookDto,
+  async update(
+    id: string,
+    updateSectionInput: UpdateSectionInput,
     user: AuthUser,
-    bookId: string,
   ) {
-    if (!this.#userHasAccessToSection(sectionId, user.id)) {
-      this.#throwNotFoundOrNoPermission(sectionId);
+    const hasAccess = await this.authorizationService.userHasAccessToSection(
+      id,
+      user.id,
+    );
+    if (!hasAccess) {
+      this.#throwNotFoundOrNoPermission(id);
     }
-    return this.prisma.sectionBook
-      .update({
+    try {
+      return this.sectionsRepository.update({
         where: {
-          sectionId_bookId: {
-            sectionId,
-            bookId,
-          },
+          id,
         },
-        data: {
-          sectionId: updateSectionBookDto.newSectionId,
-        },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        throw new InternalServerErrorException(
-          `Error updating section ${sectionId} book ${bookId}`,
-        );
+        data: updateSectionInput,
       });
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error updating section');
+    }
   }
 
-  async removeSectionBook(sectionId: string, bookId: string, user: AuthUser) {
-    if (!this.#userHasAccessToSection(sectionId, user.id)) {
-      this.#throwNotFoundOrNoPermission(sectionId);
+  async remove(id: string, user: AuthUser) {
+    const hasAccess = await this.authorizationService.userHasAccessToSection(
+      id,
+      user.id,
+    );
+    if (!hasAccess) {
+      this.#throwNotFoundOrNoPermission(id);
     }
-    return this.prisma.sectionBook
-      .delete({
+    try {
+      return this.sectionsRepository.remove({
         where: {
-          sectionId_bookId: {
-            sectionId,
-            bookId,
-          },
+          id,
         },
-      })
-      .catch((e) => {
-        this.logger.error(e);
-        throw new BadRequestException(e);
       });
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
-
-  #userHasAccessToSection = async (sectionId: string, userId: string) => {
-    const section = await this.prisma.section.findUnique({
-      where: { id: sectionId },
-      include: {
-        shelf: true,
-      },
-    });
-    return Boolean(section && section.shelf.ownerId === userId);
-  };
 
   #throwNotFoundOrNoPermission = (sectionId: string) => {
     throw new BadRequestException(

@@ -1,6 +1,5 @@
 'use server';
-
-import api from '@web/lib/nest-api';
+import api from '@web/lib/api/nest-api';
 import { AxiosError } from 'axios';
 import { BookWithSection, ShelfWithSections } from '@libshary/shared-types';
 import { Section, Shelf } from '@prisma/client';
@@ -10,7 +9,6 @@ export const getShelfs = async (): Promise<
 > => {
   try {
     const res = await api.get('/shelves');
-    // console.log({ res: res.data });
     return res.data as ShelfWithSections[];
   } catch (error) {
     console.log({ error });
@@ -29,7 +27,6 @@ export const getShelfDataById = async (
 > => {
   try {
     const res = await api.get(`/shelves/${id}?includeAll=true`);
-    console.log({ resOne: res.data });
     return res.data;
   } catch (error) {
     console.log({ error });

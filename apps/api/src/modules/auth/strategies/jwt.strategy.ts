@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@api/modules/prisma/prisma.service';
 import configuration from '@api/config/configuration';
 
@@ -11,7 +11,7 @@ type JwtPayload = {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  // private logger = new Logger(JwtStrategy.name);
+  private logger = new Logger(JwtStrategy.name);
   constructor(private prisma: PrismaService) {
     const extractJwtFromCookie = (req) => {
       let token = null;
@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ignoreExpiration: true,
       secretOrKey: configuration().jwt_secret,
       jwtFromRequest: extractJwtFromCookie,
+      passReqToCallback: true,
     });
   }
 
@@ -34,8 +35,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
 
     if (!user) throw new UnauthorizedException('Not logged in');
+    console.log({ user });
     return {
-      id: payload.sub,
+      id: user.id,
       email: user.email,
     };
   }

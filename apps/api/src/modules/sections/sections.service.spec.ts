@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SectionsService } from './sections.service';
+import { SectionsService } from './sections-legacy.service';
 import { PrismaServiceMock } from '../prisma/__mocks__/prisma.service.mock';
 import { HttpService } from '@nestjs/axios';
 import { ConfigurationServiceMock } from '@api/config/__mock__/configuration.service.mock';

@@ -1,5 +1,5 @@
 import { getShelfs } from '@web/actions/shelves/queries';
-import { Sidebar } from '@web/components/(sidebar)/SideBar';
+import { Sidebar } from '@web/components/sidebar/SideBar';
 
 export default async function ShelvesLayout({
   children,
@@ -7,6 +7,7 @@ export default async function ShelvesLayout({
   children: React.ReactNode;
 }>) {
   const shelves = await getShelfs();
+  console.log({ test: 'Layout render' });
   if ('error' in shelves) {
     return <div>{shelves.error}</div>;
   }

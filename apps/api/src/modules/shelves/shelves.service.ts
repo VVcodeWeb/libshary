@@ -1,128 +1,87 @@
-import { PrismaService } from '@api/modules/prisma/prisma.service';
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthUser } from '@api/shared/models/user.model';
-import {
-  BookWithSection,
-  CreateShelfDto,
-  ShelfWithSections,
-  ShelfWithSectionsBooks,
-  UpdateShelfDto,
-} from '@libshary/shared-types';
-import { Section, Shelf } from '@prisma/client';
-
-//TODO: move it
-const defaultSections = ['read', 'currently_reading', 'want_to_read'];
+import { CreateShelfInput, UpdateShelfInput } from './dto/shelves.input';
+import { ShelvesRepository } from './shelves.repository';
+import { AuthorizationService } from '@api/shared/services/authorization.service';
 
 @Injectable()
 export class ShelvesService {
   private logger = new Logger(ShelvesService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private shelvesRepository: ShelvesRepository,
+    private authorizationService: AuthorizationService,
+  ) {}
 
-  //TODO: icon&colour
-  async create(createShelfDto: CreateShelfDto, user: AuthUser) {
-    const res = await this.prisma.$transaction(async (prisma) => {
-      const shelf = await this.prisma.shelf
-        .create({
-          data: {
-            private: createShelfDto.private,
-            description: createShelfDto.description,
-            name: createShelfDto.name,
-            ownerId: user.id,
-          },
-        })
-        .catch((error) => {
-          this.logger.error(error);
-          throw new InternalServerErrorException('Error creating shelf');
-        });
-      if (createShelfDto.defaultSections) {
-        return prisma.section
-          .createMany({
-            data: defaultSections.map((sectionName) => ({
-              name: sectionName,
-              shelfId: shelf.id,
-            })),
-          })
-          .catch((error) => {
-            this.logger.error(error);
-            throw new InternalServerErrorException(
-              'Error creating default sections',
-            );
-          });
-      }
-      return shelf;
-    });
-    this.logger.log({ res });
-    return res;
-  }
-  /**
-   * @returns Retrieves shelf -> sections -> books
-   */
-  async findOne(
-    id: string,
-    user: AuthUser,
-    includeAll: boolean,
-  ): Promise<
-    | Shelf
-    | null
-    | { shelf: Shelf; sections: Section[]; books: BookWithSection[] }
-  > {
-    const baseWhere = {
-      id,
-      ownerId: user.id,
-    };
-    if (!includeAll) {
-      return await this.prisma.shelf.findUnique({
-        where: baseWhere,
-      });
-    }
-    const shelfSectionBooks = await this.prisma.shelf.findUnique({
-      where: baseWhere,
-      include: {
-        sections: {
-          include: {
-            books: {
-              include: {
-                book: true,
-              },
+  async create(createShelfInput: CreateShelfInput, user: AuthUser) {
+    const DEFAULT_SECTIONS = ['Read', 'Currently reading', 'Want to read'];
+    const { defaultSections, color, ...data } = createShelfInput;
+    if (createShelfInput.defaultSections) {
+      return await this.shelvesRepository.create({
+        data: {
+          ...data,
+          ownerId: user.id,
+          sections: {
+            createMany: {
+              data: DEFAULT_SECTIONS.map((name) => ({ name })),
             },
           },
         },
-      },
-    });
-
-    if (shelfSectionBooks) {
-      const { sections, ...shelf } = shelfSectionBooks;
-      const books = sections.flatMap((section) =>
-        section.books.map((book) => ({
-          ...book.book,
-          sectionId: section.id,
-        })),
-      );
-      const sectionsWithoutBooks = sections.map(
-        ({ books: _, ...sectionProps }) => sectionProps,
-      );
-      return {
-        shelf,
-        sections: sectionsWithoutBooks,
-        books,
-      };
+      });
     }
-
-    return shelfSectionBooks;
+    return await this.shelvesRepository.create({
+      data: { ...data, ownerId: user.id },
+    });
   }
 
-  async update(id: string, updateShelfDto: UpdateShelfDto, user: AuthUser) {
+  async findOne(id: string, user: AuthUser) {
+    const shelf = await this.shelvesRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    const hasAccess =
+      shelf &&
+      (await this.authorizationService.userHasAccessToShelf(shelf.id, user.id));
+
+    if (!hasAccess) {
+      this.#throwNotFoundOrNoPermission(id);
+    }
+    return shelf;
+  }
+
+  async findAll(user: AuthUser) {
     try {
-      return await this.prisma.shelf.update({
+      return await this.shelvesRepository.findAll({
         where: {
-          id,
           ownerId: user.id,
         },
-        data: updateShelfDto,
+      });
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error finding shelfs');
+    }
+  }
+
+  async update(id: string, updateShelfInput: UpdateShelfInput, user: AuthUser) {
+    const hasAccess = await this.authorizationService.userHasAccessToShelf(
+      id,
+      user.id,
+    );
+    if (!hasAccess) {
+      this.#throwNotFoundOrNoPermission(id);
+    }
+    try {
+      return await this.shelvesRepository.update({
+        where: {
+          id,
+        },
+        data: updateShelfInput,
       });
     } catch (error) {
       this.logger.error(error);
@@ -131,11 +90,17 @@ export class ShelvesService {
   }
 
   async remove(id: string, user: AuthUser) {
+    const hasAccess = await this.authorizationService.userHasAccessToShelf(
+      id,
+      user.id,
+    );
+    if (!hasAccess) {
+      this.#throwNotFoundOrNoPermission(id);
+    }
     try {
-      return await this.prisma.shelf.delete({
+      return await this.shelvesRepository.remove({
         where: {
           id,
-          ownerId: user.id,
         },
       });
     } catch (error) {
@@ -143,22 +108,9 @@ export class ShelvesService {
       throw new InternalServerErrorException(error);
     }
   }
-  /**
-   * @returns Retrieves shelf and associated sections
-   */
-  async findAll(user: AuthUser): Promise<ShelfWithSections[]> {
-    try {
-      return await this.prisma.shelf.findMany({
-        where: {
-          ownerId: user.id,
-        },
-        include: {
-          sections: true,
-        },
-      });
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException('Error finding shelfs');
-    }
-  }
+  #throwNotFoundOrNoPermission = (shelfId: string) => {
+    throw new BadRequestException(
+      `Shelf with id ${shelfId} not found or you do not have permission to access it`,
+    );
+  };
 }

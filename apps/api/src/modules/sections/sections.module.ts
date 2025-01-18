@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
-import { SectionsService } from './sections.service';
-import { SectionsController } from './sections.controller';
 import { HttpModule } from '@nestjs/axios';
 import { PrismaModule } from '../prisma/prisma.module';
+import { SectionsService } from './sections.service';
+import { SectionsRepository } from './sections.repository';
+import { SectionsResolver } from './sections.resolver';
+import { AuthorizationService } from '@api/shared/services/authorization.service';
 
 @Module({
   imports: [HttpModule, PrismaModule],
-  controllers: [SectionsController],
-  providers: [SectionsService],
+  providers: [
+    SectionsService,
+    SectionsResolver,
+    SectionsRepository,
+    AuthorizationService,
+  ],
 })
 export class SectionsModule {}

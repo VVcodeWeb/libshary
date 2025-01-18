@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ZodFilter } from './shared/filters/zod.filter';
 import { Transport } from '@nestjs/microservices';
+import { PinoLoggerService } from './shared/services/pino-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

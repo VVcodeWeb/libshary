@@ -50,3 +50,4 @@ libs/prisma/generated
 .temp
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+docker-compose.local.yml

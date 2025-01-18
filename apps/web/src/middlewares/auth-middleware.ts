@@ -20,7 +20,6 @@ export default function middleware(next: NextMiddleware): NextMiddleware {
         return NextResponse.redirect(signInUrl);
       }
     }
-    // console.log({ middleware: 'auth', msg: 'called' });
     return next(req, _next);
   };
 }

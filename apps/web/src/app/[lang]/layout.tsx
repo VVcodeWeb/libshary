@@ -3,12 +3,15 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@web/providers/AuthProvider';
 import { getServerSession } from 'next-auth';
-import { isValidLocale } from '@web/i18n/i18-config';
+import { isValidLocale } from '@web/lib/i18n/i18-config';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { authOptions } from '@web/lib/auth-config';
+import { authOptions } from '@web/lib/auth/auth-config';
 import { ThemeProvider } from '@web/providers/ThemeProvider';
+import { ToastProvider } from '@web/providers/ToastProvider';
+import { ModalProvider } from '@web/providers/ModalProvider';
+import ApolloProvider from '@web/providers/ApolloProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -43,11 +46,17 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextIntlClientProvider messages={messages}>
-          <AuthProvider session={session}>
-            <ThemeProvider>{children}</ThemeProvider>
-          </AuthProvider>
-        </NextIntlClientProvider>
+        <ApolloProvider>
+          <NextIntlClientProvider messages={messages}>
+            <AuthProvider session={session}>
+              <ThemeProvider>
+                <ModalProvider>
+                  <ToastProvider>{children}</ToastProvider>
+                </ModalProvider>
+              </ThemeProvider>
+            </AuthProvider>
+          </NextIntlClientProvider>
+        </ApolloProvider>
       </body>
     </html>
   );

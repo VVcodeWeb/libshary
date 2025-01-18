@@ -3,43 +3,38 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { SearchApi } from '@libshary/shared-types';
-import { HttpService } from '@nestjs/axios';
-import { ConfigurationService } from '@api/config/configuration.service';
+import { BooksRepository } from './books.repository';
+import { BookSearchArgs } from './dto/book-search.args';
 import { firstValueFrom } from 'rxjs';
-import { AxiosError } from 'axios';
+import { ConfigurationService } from '@api/config/configuration.service';
+import { HttpService } from '@nestjs/axios';
+import { BookFindArgs } from './dto/book-find.args';
+
 @Injectable()
 export class BooksService {
-  private readonly logger = new Logger(BooksService.name);
+  private logger = new Logger(BooksService.name);
   constructor(
-    private httpService: HttpService,
+    private booksRepository: BooksRepository,
     private configurationService: ConfigurationService,
+    private httpService: HttpService,
   ) {}
 
-  create() {
-    return 'This action adds a new book';
+  async findOne(bookFindArgs: BookFindArgs) {
+    return await this.booksRepository.findOne({
+      where: {
+        OR: [
+          { id: bookFindArgs.id },
+          { googleBookId: bookFindArgs.googleBookId },
+        ],
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all books`;
-  }
-
-  findOne(id: string) {
-    return `This action returns a #${id} book`;
-  }
-
-  update(id: string) {
-    return `This action updates a #${id} book`;
-  }
-
-  remove(id: string) {
-    return `This action removes a #${id} book`;
-  }
-
-  async search(query: string, api: SearchApi) {
+  async search(bookSearchArgs: BookSearchArgs) {
+    const { q, api } = bookSearchArgs;
     let url = this.configurationService.book_search_url.concat(
       '/search',
-      `?q=${query}`,
+      `?q=${q}`,
     );
     if (api) url += `&api=${api}`;
     try {
