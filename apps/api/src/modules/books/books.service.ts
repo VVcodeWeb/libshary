@@ -52,13 +52,12 @@ export class BooksService implements OnModuleInit {
       tags: [],
     };
     try {
-      this.logger.log('Request ');
       const response: BookSearchResponse = await firstValueFrom(
         this.bookSearchClient.search(request) as Observable<BookSearchResponse>,
       );
-      this.logger.log({ response: response });
       return this.#mapGrpcToDto(response);
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }

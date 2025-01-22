@@ -9,6 +9,7 @@ import { Logger, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gcl.guard';
 import { GraphQLResolveInfo } from 'graphql';
 import { parseResolveInfo } from 'graphql-parse-resolve-info';
+import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 
 @Resolver(() => ShelfModel)
 @UseGuards(GqlAuthGuard)
@@ -20,8 +21,9 @@ export class ShelvesResolver {
   createShelf(
     @Args('createShelfInput') createShelfInput: CreateShelfInput,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ): Promise<Shelf> {
-    return this.shelvesService.create(createShelfInput, user);
+    return this.shelvesService.create(createShelfInput, user, info);
   }
 
   @Query(() => ShelfModel, { nullable: true })
@@ -30,7 +32,7 @@ export class ShelvesResolver {
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
   ): Promise<Shelf | null> {
-    return this.shelvesService.findOne(id, user);
+    return this.shelvesService.findOne(id, user, info);
   }
 
   @Query(() => [ShelfModel], { nullable: true })
@@ -38,11 +40,7 @@ export class ShelvesResolver {
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
   ): Promise<Shelf[]> {
-    const parsedInfo = parseResolveInfo(info, {
-      deep: true,
-    });
-    this.logger.log({ parsedInfo });
-    return this.shelvesService.findAll(user);
+    return this.shelvesService.findAll(user, info);
   }
 
   @Mutation(() => ShelfModel)
@@ -50,12 +48,17 @@ export class ShelvesResolver {
     @Args('id') id: string,
     @Args('updateShelfInput') updateShelfInput: UpdateShelfInput,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ): Promise<Shelf> {
-    return this.shelvesService.update(id, updateShelfInput, user);
+    return this.shelvesService.update(id, updateShelfInput, user, info);
   }
 
   @Mutation(() => ShelfModel)
-  removeShelf(@Args('id') id: string, @User() user: AuthUser): Promise<Shelf> {
-    return this.shelvesService.remove(id, user);
+  removeShelf(
+    @Args('id') id: string,
+    @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
+  ): Promise<Shelf> {
+    return this.shelvesService.remove(id, user, info);
   }
 }

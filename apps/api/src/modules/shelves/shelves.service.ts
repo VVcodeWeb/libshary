@@ -8,6 +8,8 @@ import { AuthUser } from '@api/shared/models/user.model';
 import { CreateShelfInput, UpdateShelfInput } from './dto/shelves.input';
 import { ShelvesRepository } from './shelves.repository';
 import { AuthorizationService } from '@api/shared/services/authorization.service';
+import { GraphQLResolveInfo } from 'graphql';
+import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 
 @Injectable()
 export class ShelvesService {
@@ -17,7 +19,12 @@ export class ShelvesService {
     private authorizationService: AuthorizationService,
   ) {}
 
-  async create(createShelfInput: CreateShelfInput, user: AuthUser) {
+  async create(
+    createShelfInput: CreateShelfInput,
+    user: AuthUser,
+    info: GraphQLResolveInfo,
+  ) {
+    const include = generatePrismaInclude(info);
     const DEFAULT_SECTIONS = ['Read', 'Currently reading', 'Want to read'];
     const { defaultSections, color, ...data } = createShelfInput;
     if (createShelfInput.defaultSections) {
@@ -31,18 +38,22 @@ export class ShelvesService {
             },
           },
         },
+        include,
       });
     }
     return await this.shelvesRepository.create({
       data: { ...data, ownerId: user.id },
+      include,
     });
   }
 
-  async findOne(id: string, user: AuthUser) {
+  async findOne(id: string, user: AuthUser, info: GraphQLResolveInfo) {
+    const include = generatePrismaInclude(info);
     const shelf = await this.shelvesRepository.findOne({
       where: {
         id,
       },
+      include,
     });
     const hasAccess =
       shelf &&
@@ -54,12 +65,14 @@ export class ShelvesService {
     return shelf;
   }
 
-  async findAll(user: AuthUser) {
+  async findAll(user: AuthUser, info: GraphQLResolveInfo) {
+    const include = generatePrismaInclude(info);
     try {
       return await this.shelvesRepository.findAll({
         where: {
           ownerId: user.id,
         },
+        include,
       });
     } catch (error) {
       this.logger.error(error);
@@ -67,7 +80,13 @@ export class ShelvesService {
     }
   }
 
-  async update(id: string, updateShelfInput: UpdateShelfInput, user: AuthUser) {
+  async update(
+    id: string,
+    updateShelfInput: UpdateShelfInput,
+    user: AuthUser,
+    info: GraphQLResolveInfo,
+  ) {
+    const include = generatePrismaInclude(info);
     const hasAccess = await this.authorizationService.userHasAccessToShelf(
       id,
       user.id,
@@ -81,6 +100,7 @@ export class ShelvesService {
           id,
         },
         data: updateShelfInput,
+        include,
       });
     } catch (error) {
       this.logger.error(error);
@@ -88,7 +108,8 @@ export class ShelvesService {
     }
   }
 
-  async remove(id: string, user: AuthUser) {
+  async remove(id: string, user: AuthUser, info: GraphQLResolveInfo) {
+    const include = generatePrismaInclude(info);
     const hasAccess = await this.authorizationService.userHasAccessToShelf(
       id,
       user.id,
@@ -101,6 +122,7 @@ export class ShelvesService {
         where: {
           id,
         },
+        include,
       });
     } catch (error) {
       this.logger.error(error);

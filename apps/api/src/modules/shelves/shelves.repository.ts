@@ -6,48 +6,23 @@ import { Prisma } from '@prisma/client';
 export class ShelvesRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create({ data }: { data: Prisma.ShelfCreateArgs['data'] }) {
-    return await this.prisma.shelf.create({ data });
+  async create(args: Prisma.ShelfCreateArgs) {
+    return await this.prisma.shelf.create(args);
   }
 
-  async findOne({ where }: { where: Prisma.ShelfFindUniqueArgs['where'] }) {
-    return this.prisma.shelf.findUnique({
-      where,
-    });
-  }
-  async findAll({ where }: { where: Prisma.ShelfWhereInput }) {
-    return this.prisma.shelf.findMany({
-      where,
-      include: {
-        sections: {
-          include: {
-            books: {
-              include: {
-                book: true,
-              },
-            },
-          },
-        },
-      },
-    });
+  async findOne(args: Prisma.ShelfFindFirstArgs) {
+    return this.prisma.shelf.findFirst(args);
   }
 
-  async update({
-    data,
-    where,
-  }: {
-    data: Prisma.ShelfUpdateArgs['data'];
-    where: Prisma.ShelfUpdateArgs['where'];
-  }) {
-    return this.prisma.shelf.update({
-      where,
-      data,
-    });
+  async findAll(args: Prisma.ShelfFindManyArgs) {
+    return this.prisma.shelf.findMany(args);
   }
 
-  async remove({ where }: { where: Prisma.ShelfDeleteArgs['where'] }) {
-    return this.prisma.shelf.delete({
-      where,
-    });
+  async update(args: Prisma.ShelfUpdateArgs) {
+    return this.prisma.shelf.update(args);
+  }
+
+  async remove(args: Prisma.ShelfDeleteArgs) {
+    return this.prisma.shelf.delete(args);
   }
 }
