@@ -6,42 +6,19 @@ import { Prisma } from '@prisma/client';
 export class SectionsBooksRepository {
   constructor(private prisma: PrismaService) {}
 
-  async find({ where }: { where: Prisma.SectionBookWhereInput }) {
-    return this.prisma.sectionBook.findMany({
-      where,
-      include: {
-        book: true,
-        section: true,
-      },
-    });
+  async find(args: Prisma.SectionBookFindManyArgs) {
+    return this.prisma.sectionBook.findMany(args);
   }
 
-  async create({ data }: { data: Prisma.SectionBookCreateArgs['data'] }) {
-    return this.prisma.sectionBook.create({
-      data,
-      include: {
-        book: true,
-        section: true,
-      },
-    });
+  async create(args: Prisma.SectionBookCreateArgs) {
+    return this.prisma.sectionBook.create(args);
   }
 
-  async update({
-    where,
-    data,
-  }: {
-    where: Prisma.SectionBookUpdateArgs['where'];
-    data: Prisma.SectionBookUpdateArgs['data'];
-  }) {
-    return this.prisma.sectionBook.update({
-      where,
-      data,
-    });
+  async update(args: Prisma.SectionBookUpdateArgs) {
+    return this.prisma.sectionBook.update(args);
   }
 
-  async remove({ where }: { where: Prisma.SectionBookDeleteArgs['where'] }) {
-    return this.prisma.sectionBook.delete({
-      where,
-    });
+  async remove(args: Prisma.SectionBookDeleteArgs) {
+    return this.prisma.sectionBook.delete(args);
   }
 }

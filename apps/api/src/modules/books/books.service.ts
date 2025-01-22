@@ -15,6 +15,8 @@ import {
   SearchApi,
   BookSearchResponse,
 } from '@libshary/grpc/generated/booksearch';
+import { GraphQLResolveInfo } from 'graphql';
+import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 
 @Injectable()
 export class BooksService implements OnModuleInit {
@@ -31,7 +33,7 @@ export class BooksService implements OnModuleInit {
       this.client.getService<BookSearchClient>('BookSearch');
   }
 
-  async findOne(bookFindArgs: BookFindArgs) {
+  async findOne(bookFindArgs: BookFindArgs, include: Record<string, any>) {
     return await this.booksRepository.findOne({
       where: {
         OR: [
@@ -39,10 +41,11 @@ export class BooksService implements OnModuleInit {
           { googleBookId: bookFindArgs.googleBookId },
         ],
       },
+      include,
     });
   }
 
-  async search(bookSearchArgs: BookSearchArgs) {
+  async search(bookSearchArgs: BookSearchArgs, include: Record<string, any>) {
     const { q, limit, offset } = bookSearchArgs;
     const request: BookSearchRequest = {
       q,
@@ -55,7 +58,10 @@ export class BooksService implements OnModuleInit {
       const response: BookSearchResponse = await firstValueFrom(
         this.bookSearchClient.search(request) as Observable<BookSearchResponse>,
       );
-      return this.#mapGrpcToDto(response);
+      return {
+        ...this.#mapGrpcToDto(response),
+        include,
+      };
     } catch (error) {
       this.logger.error(error);
       throw error;

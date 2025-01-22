@@ -6,53 +6,23 @@ import { Prisma } from '@prisma/client';
 export class SectionsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findOne({ where, include }: Prisma.SectionFindUniqueArgs) {
-    return this.prisma.section.findUnique({
-      where,
-      include: include ?? {
-        shelf: true,
-        books: {
-          include: {
-            book: true,
-          },
-        },
-      },
-    });
-  }
-  async findAll({ where, include }: Prisma.SectionFindManyArgs) {
-    return this.prisma.section.findMany({
-      where,
-      include: include ?? {
-        shelf: true,
-        books: {
-          include: {
-            book: true,
-          },
-        },
-      },
-    });
+  async findOne(args: Prisma.SectionFindUniqueArgs) {
+    return this.prisma.section.findUnique(args);
   }
 
-  async create({ data }: Prisma.SectionCreateArgs) {
-    return this.prisma.section.create({ data });
+  async findAll(args: Prisma.SectionFindManyArgs) {
+    return this.prisma.section.findMany(args);
   }
 
-  async update({
-    data,
-    where,
-  }: {
-    data: Prisma.SectionUpdateArgs['data'];
-    where: Prisma.SectionUpdateArgs['where'];
-  }) {
-    return this.prisma.section.update({
-      where,
-      data,
-    });
+  async create(args: Prisma.SectionCreateArgs) {
+    return this.prisma.section.create(args);
   }
 
-  async remove({ where }: { where: Prisma.SectionDeleteArgs['where'] }) {
-    return this.prisma.section.delete({
-      where,
-    });
+  async update(args: Prisma.SectionUpdateArgs) {
+    return this.prisma.section.update(args);
+  }
+
+  async remove(args: Prisma.SectionDeleteArgs) {
+    return this.prisma.section.delete(args);
   }
 }

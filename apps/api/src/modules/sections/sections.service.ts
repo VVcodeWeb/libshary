@@ -8,6 +8,8 @@ import { AuthUser } from '@api/shared/models/user.model';
 import { CreateSectionInput, UpdateSectionInput } from './dto/sections.input';
 import { SectionsRepository } from './sections.repository';
 import { AuthorizationService } from '@api/shared/services/authorization.service';
+import { GraphQLResolveInfo } from 'graphql';
+import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 
 @Injectable()
 export class SectionsService {
@@ -17,7 +19,11 @@ export class SectionsService {
     private authorizationService: AuthorizationService,
   ) {}
 
-  async create(createSectionInput: CreateSectionInput, user: AuthUser) {
+  async create(
+    createSectionInput: CreateSectionInput,
+    user: AuthUser,
+    include: Record<string, any>,
+  ) {
     const hasAccess = await this.authorizationService.userHasAccessToShelf(
       createSectionInput.shelfId,
       user.id,
@@ -31,14 +37,16 @@ export class SectionsService {
       data: {
         ...createSectionInput,
       },
+      include,
     });
   }
 
-  async findOne(id: string, user: AuthUser) {
+  async findOne(id: string, user: AuthUser, include: Record<string, any>) {
     const section = await this.sectionsRepository.findOne({
       where: {
         id,
       },
+      include,
     });
     const hasAccess =
       section &&
@@ -53,7 +61,7 @@ export class SectionsService {
     return section;
   }
 
-  async findAll(user: AuthUser) {
+  async findAll(user: AuthUser, include: Record<string, any>) {
     try {
       return this.sectionsRepository.findAll({
         where: {
@@ -61,6 +69,7 @@ export class SectionsService {
             ownerId: user.id,
           },
         },
+        include,
       });
     } catch (error) {
       this.logger.error(error);
@@ -72,6 +81,7 @@ export class SectionsService {
     id: string,
     updateSectionInput: UpdateSectionInput,
     user: AuthUser,
+    include: Record<string, any>,
   ) {
     const hasAccess = await this.authorizationService.userHasAccessToSection(
       id,
@@ -86,6 +96,7 @@ export class SectionsService {
           id,
         },
         data: updateSectionInput,
+        include,
       });
     } catch (error) {
       this.logger.error(error);
@@ -93,7 +104,7 @@ export class SectionsService {
     }
   }
 
-  async remove(id: string, user: AuthUser) {
+  async remove(id: string, user: AuthUser, include: Record<string, any>) {
     const hasAccess = await this.authorizationService.userHasAccessToSection(
       id,
       user.id,
@@ -106,6 +117,7 @@ export class SectionsService {
         where: {
           id,
         },
+        include,
       });
     } catch (error) {
       this.logger.error(error);

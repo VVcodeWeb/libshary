@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Info } from '@nestjs/graphql';
 import { SectionsBooksService } from './sections-books.service';
 import { AuthUser } from '@api/shared/models/user.model';
 import { User } from '@api/shared/decorators/user.decorator';
@@ -9,54 +9,73 @@ import {
   CreateSectionBookInput,
   UpdateSectionBookInput,
 } from './dto/section-book.input';
+import { GraphQLResolveInfo } from 'graphql';
+import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 
 @Resolver(() => SectionBookModel)
+@UseGuards(GqlAuthGuard)
 export class SectionsBooksResolver {
   constructor(private readonly sectionsBooksService: SectionsBooksService) {}
 
-  @UseGuards(GqlAuthGuard)
   @Query(() => [SectionBookModel], { nullable: true })
   findSectionBooks(
     @Args('sectionId') sectionId: string,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ) {
-    return this.sectionsBooksService.find(sectionId, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsBooksService.find(sectionId, user, include);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Query(() => [SectionBookModel], { nullable: true })
-  findAllSectionBooks(@User() user: AuthUser) {
-    return this.sectionsBooksService.findAll(user);
+  findAllSectionBooks(
+    @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const include = generatePrismaInclude(info);
+    return this.sectionsBooksService.findAll(user, include);
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => SectionBookModel)
   createSectionBook(
     @Args('createSectionBookInput')
     createSectionBookInput: CreateSectionBookInput,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ) {
-    return this.sectionsBooksService.create(createSectionBookInput, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsBooksService.create(
+      createSectionBookInput,
+      user,
+      include,
+    );
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => SectionBookModel)
   updateSectionBook(
     @Args('updateSectionBookInput')
     updateSectionBookInput: UpdateSectionBookInput,
     @Args('id') id: string,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ) {
-    return this.sectionsBooksService.update(id, updateSectionBookInput, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsBooksService.update(
+      id,
+      updateSectionBookInput,
+      user,
+      include,
+    );
   }
 
-  @UseGuards(GqlAuthGuard)
   @Mutation(() => SectionBookModel)
   removeSectionBook(
     @Args('sectionId') sectionId: string,
     @Args('bookId') bookId: string,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ) {
-    return this.sectionsBooksService.remove(sectionId, bookId, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsBooksService.remove(sectionId, bookId, user, include);
   }
 }

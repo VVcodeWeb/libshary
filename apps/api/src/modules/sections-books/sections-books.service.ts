@@ -41,7 +41,11 @@ export class SectionsBooksService {
       this.client.getService<BookSearchClient>('BookSearch');
   }
 
-  async create(createSectionBookInput: CreateSectionBookInput, user: AuthUser) {
+  async create(
+    createSectionBookInput: CreateSectionBookInput,
+    user: AuthUser,
+    include: Record<string, any>,
+  ) {
     const { sectionId, googleBookId } = createSectionBookInput;
     const hasAccess = await this.authorizationService.userHasAccessToSection(
       sectionId,
@@ -62,6 +66,7 @@ export class SectionsBooksService {
           bookId: bookExists.id,
           sectionId,
         },
+        include,
       });
     }
     const request: BookSearchByIdRequest = {
@@ -96,6 +101,7 @@ export class SectionsBooksService {
             },
           },
         },
+        include,
       });
     } catch (error) {
       this.logger.error(
@@ -105,7 +111,7 @@ export class SectionsBooksService {
     }
   }
 
-  async find(sectionId: string, user: AuthUser) {
+  async find(sectionId: string, user: AuthUser, include: Record<string, any>) {
     return this.sectionBooksRepository.find({
       where: {
         sectionId,
@@ -115,9 +121,11 @@ export class SectionsBooksService {
           },
         },
       },
+      include,
     });
   }
-  async findAll(user: AuthUser) {
+
+  async findAll(user: AuthUser, include: Record<string, any>) {
     return this.sectionBooksRepository.find({
       where: {
         section: {
@@ -126,6 +134,7 @@ export class SectionsBooksService {
           },
         },
       },
+      include,
     });
   }
 
@@ -133,6 +142,7 @@ export class SectionsBooksService {
     id: string,
     updateSectionBookInput: UpdateSectionBookInput,
     user: AuthUser,
+    include: Record<string, any>,
   ) {
     const { sectionId } = updateSectionBookInput;
     const hasAccess = await this.authorizationService.userHasAccessToSection(
@@ -149,10 +159,16 @@ export class SectionsBooksService {
       data: {
         sectionId,
       },
+      include,
     });
   }
 
-  async remove(sectionId: string, bookId: string, user: AuthUser) {
+  async remove(
+    sectionId: string,
+    bookId: string,
+    user: AuthUser,
+    include: Record<string, any>,
+  ) {
     const hasAccess = await this.authorizationService.userHasAccessToSection(
       sectionId,
       user.id,
@@ -167,6 +183,7 @@ export class SectionsBooksService {
           bookId,
         },
       },
+      include,
     });
   }
 

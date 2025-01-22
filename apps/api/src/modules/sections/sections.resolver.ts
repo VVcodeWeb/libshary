@@ -7,7 +7,7 @@ import { SectionModel } from './models/section.model';
 import { Logger, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gcl.guard';
 import { GraphQLResolveInfo } from 'graphql';
-import { parseResolveInfo } from 'graphql-parse-resolve-info';
+import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 import { User } from '@api/shared/decorators/user.decorator';
 
 @Resolver(() => SectionModel)
@@ -20,8 +20,10 @@ export class SectionsResolver {
   createSection(
     @Args('createSectionInput') createSectionInput: CreateSectionInput,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ): Promise<Section> {
-    return this.sectionsService.create(createSectionInput, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsService.create(createSectionInput, user, include);
   }
 
   @Query(() => SectionModel, { nullable: true })
@@ -30,7 +32,8 @@ export class SectionsResolver {
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
   ): Promise<Section | null> {
-    return this.sectionsService.findOne(id, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsService.findOne(id, user, include);
   }
 
   @Query(() => [SectionModel], { nullable: true })
@@ -38,11 +41,8 @@ export class SectionsResolver {
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
   ): Promise<Section[]> {
-    const parsedInfo = parseResolveInfo(info, {
-      deep: true,
-    });
-    this.logger.log({ parsedInfo });
-    return this.sectionsService.findAll(user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsService.findAll(user, include);
   }
 
   @Mutation(() => SectionModel)
@@ -50,15 +50,19 @@ export class SectionsResolver {
     @Args('id') id: string,
     @Args('updateSectionInput') updateSectionInput: UpdateSectionInput,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ): Promise<Section> {
-    return this.sectionsService.update(id, updateSectionInput, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsService.update(id, updateSectionInput, user, include);
   }
 
   @Mutation(() => SectionModel)
   removeSection(
     @Args('id') id: string,
     @User() user: AuthUser,
+    @Info() info: GraphQLResolveInfo,
   ): Promise<Section> {
-    return this.sectionsService.remove(id, user);
+    const include = generatePrismaInclude(info);
+    return this.sectionsService.remove(id, user, include);
   }
 }

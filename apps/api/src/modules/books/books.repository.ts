@@ -6,38 +6,23 @@ import { Prisma } from '@prisma/client';
 export class BooksRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create({ data }: { data: Prisma.BookCreateArgs['data'] }) {
-    return await this.prisma.book.create({ data });
+  async create(args: Prisma.BookCreateArgs) {
+    return this.prisma.book.create(args);
   }
 
-  async findOne({ where }: { where: Prisma.BookFindFirstArgs['where'] }) {
-    return this.prisma.book.findFirst({
-      where,
-    });
+  async findOne(args: Prisma.BookFindFirstArgs) {
+    return this.prisma.book.findFirst(args);
   }
 
-  async update({
-    data,
-    where,
-  }: {
-    data: Prisma.BookUpdateArgs['data'];
-    where: Prisma.BookUpdateArgs['where'];
-  }) {
-    return this.prisma.book.update({
-      where,
-      data,
-    });
+  async update(args: Prisma.BookUpdateArgs) {
+    return this.prisma.book.update(args);
   }
 
-  async remove({ where }: { where: Prisma.BookDeleteArgs['where'] }) {
-    return this.prisma.book.delete({
-      where,
-    });
+  async remove(args: Prisma.BookDeleteArgs) {
+    return this.prisma.book.delete(args);
   }
 
-  async findAll({ where }: { where: Prisma.BookWhereInput }) {
-    return this.prisma.book.findMany({
-      where,
-    });
+  async findAll(args: Prisma.BookFindManyArgs) {
+    return this.prisma.book.findMany(args);
   }
 }
