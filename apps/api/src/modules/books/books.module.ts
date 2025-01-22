@@ -5,9 +5,10 @@ import { PrismaModule } from '@api/modules/prisma/prisma.module';
 import { BooksService } from './books.service';
 import { BooksResolver } from './books.resolver';
 import { BooksRepository } from './books.repository';
+import { SharedModule } from '@api/shared/module/shared.module';
 
 @Module({
-  imports: [HttpModule, ConfigurationModule, PrismaModule],
+  imports: [HttpModule, ConfigurationModule, PrismaModule, SharedModule],
   providers: [BooksService, BooksResolver, BooksRepository],
 })
 export class BooksModule {}

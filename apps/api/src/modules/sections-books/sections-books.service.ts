@@ -1,33 +1,45 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { AuthUser } from '@api/shared/models/user.model';
 import { PrismaService } from '../prisma/prisma.service';
-import { firstValueFrom } from 'rxjs';
-import { SearchApi, TransientBookModel } from '@libshary/shared-types';
-import { HttpService } from '@nestjs/axios';
-import { ConfigurationService } from '@api/config/configuration.service';
-import { AxiosError } from 'axios';
+import { firstValueFrom, Observable } from 'rxjs';
 import { SectionsBooksRepository } from './sections-books.repository';
 import {
   CreateSectionBookInput,
   UpdateSectionBookInput,
 } from './dto/section-book.input';
 import { AuthorizationService } from '@api/shared/services/authorization.service';
+import { ClientGrpc } from '@nestjs/microservices';
+import { Book } from '@prisma/client';
+import { transientBookToBook } from '@api/shared/mappers/grpc.mapper';
+import {
+  BookSearchClient,
+  BookSearchByIdRequest,
+  SearchApi,
+  BookSearchByIdResponse,
+} from '@libshary/grpc/generated/booksearch';
 
 @Injectable()
 export class SectionsBooksService {
+  private bookSearchClient: BookSearchClient;
+
   constructor(
-    private httpService: HttpService,
-    private configurationService: ConfigurationService,
     private sectionBooksRepository: SectionsBooksRepository,
     private prisma: PrismaService,
     private authorizationService: AuthorizationService,
+    @Inject('BOOKSEARCH') private client: ClientGrpc,
   ) {}
   private logger = new Logger(SectionsBooksService.name);
+
+  onModuleInit() {
+    this.bookSearchClient =
+      this.client.getService<BookSearchClient>('BookSearch');
+  }
 
   async create(createSectionBookInput: CreateSectionBookInput, user: AuthUser) {
     const { sectionId, googleBookId } = createSectionBookInput;
@@ -43,6 +55,7 @@ export class SectionsBooksService {
         googleBookId,
       },
     });
+    this.logger.log({ bookExists });
     if (bookExists) {
       return this.sectionBooksRepository.create({
         data: {
@@ -51,23 +64,21 @@ export class SectionsBooksService {
         },
       });
     }
-
-    const bookSearchUrl = this.configurationService.book_search_url.concat(
-      '/search',
-      `?bookId=${googleBookId}`,
-      `&api=${SearchApi.google_books}`,
-    );
+    const request: BookSearchByIdRequest = {
+      id: googleBookId,
+      apiProvider: SearchApi.GOOGLE_BOOKS,
+    };
     try {
       const response = await firstValueFrom(
-        this.httpService.get(bookSearchUrl),
+        this.bookSearchClient.searchById(
+          request,
+        ) as Observable<BookSearchByIdResponse>,
       );
-      const book = response.data as TransientBookModel;
-      if (!book) {
-        throw new BadRequestException({
-          message: `BOOK_NOT_FOUND`,
-        });
+      const transientBook = response.book;
+      if (!transientBook) {
+        throw new BadRequestException(`Book with id ${googleBookId} not found`);
       }
-
+      const book = transientBookToBook(transientBook);
       return this.sectionBooksRepository.create({
         data: {
           book: {
@@ -75,7 +86,7 @@ export class SectionsBooksService {
               where: { googleBookId: book.googleBookId },
               create: {
                 ...book,
-                title: book.title || 'Untitled',
+                title: book.title,
               },
             },
           },
@@ -87,29 +98,10 @@ export class SectionsBooksService {
         },
       });
     } catch (error) {
-      if (
-        error instanceof BadRequestException &&
-        error.message === 'BOOK_NOT_FOUND'
-      ) {
-        throw new BadRequestException(
-          `Book with id ${googleBookId} not found in Google Books API or database`,
-        );
-      }
-      if (error instanceof AxiosError) {
-        this.logger.error(
-          `HTTP request to book search service failed. 
-         URL: ${bookSearchUrl}, 
-         Status: ${error.response?.status || 'unknown'}, 
-         Message: ${error.message}`,
-        );
-        throw new InternalServerErrorException(
-          `Unable to fetch book with id ${googleBookId} details from the book search service. Please try again later.`,
-        );
-      }
       this.logger.error(
-        `Unexpected error while creating section book. Message: ${error}`,
+        `Error fetching book with id ${googleBookId} from gRPC service. Message: ${error}`,
       );
-      throw new InternalServerErrorException(`Error creating section book`);
+      throw new InternalServerErrorException('Error finding the book');
     }
   }
 

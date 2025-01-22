@@ -1,0 +1,37 @@
+{
+  "name": "grpc",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/grpc/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/grpc",
+        "tsConfig": "libs/grpc/tsconfig.lib.json",
+        "packageJson": "libs/grpc/package.json",
+        "main": "libs/grpc/src/index.ts",
+        "assets": ["libs/grpc/src/protos/*.proto"]
+      }
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "protoc",
+        "args": [
+          "--proto_path=libs/grpc/src/protos",
+          "--plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto",
+          "--ts_proto_out=libs/grpc/src/generated",
+          "--ts_proto_opt=esModuleInterop=true",
+          "--ts_proto_opt=addGrpcMetadata=true",
+          "--ts_proto_opt=nestJs=true",
+          "--ts_proto_opt=outputServices=grpc-js",
+          "--ts_proto_opt=outputClientImpl=grpc-web",
+          "libs/grpc/src/protos/*.proto"
+        ]
+      }
+    }
+  }
+}

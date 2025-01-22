@@ -1,23 +1,35 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { BooksRepository } from './books.repository';
 import { BookSearchArgs } from './dto/book-search.args';
-import { firstValueFrom } from 'rxjs';
-import { ConfigurationService } from '@api/config/configuration.service';
-import { HttpService } from '@nestjs/axios';
+import { firstValueFrom, Observable } from 'rxjs';
+import { ClientGrpc } from '@nestjs/microservices';
 import { BookFindArgs } from './dto/book-find.args';
+import { SearchResponseDto } from './models/search-response.model';
+import {
+  searchApiToProviderName,
+  transientBookToBook,
+} from '@api/shared/mappers/grpc.mapper';
+import {
+  BookSearchClient,
+  BookSearchRequest,
+  SearchApi,
+  BookSearchResponse,
+} from '@libshary/grpc/generated/booksearch';
 
 @Injectable()
-export class BooksService {
+export class BooksService implements OnModuleInit {
+  private bookSearchClient: BookSearchClient;
   private logger = new Logger(BooksService.name);
+
   constructor(
     private booksRepository: BooksRepository,
-    private configurationService: ConfigurationService,
-    private httpService: HttpService,
+    @Inject('BOOKSEARCH') private client: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.bookSearchClient =
+      this.client.getService<BookSearchClient>('BookSearch');
+  }
 
   async findOne(bookFindArgs: BookFindArgs) {
     return await this.booksRepository.findOne({
@@ -31,21 +43,40 @@ export class BooksService {
   }
 
   async search(bookSearchArgs: BookSearchArgs) {
-    const { q, api } = bookSearchArgs;
-    let url = this.configurationService.book_search_url.concat(
-      '/search',
-      `?q=${q}`,
-    );
-    if (api) url += `&api=${api}`;
+    const { q, limit, offset } = bookSearchArgs;
+    const request: BookSearchRequest = {
+      q,
+      apiProvider: SearchApi.GOOGLE_BOOKS,
+      limit,
+      offset,
+      tags: [],
+    };
     try {
-      const response = await firstValueFrom(this.httpService.get(url));
-      this.logger.log(`HTTP request to book search service succeeded`);
-      return response.data;
-    } catch (error) {
-      this.logger.error(`HTTP request to book search service failed`, error);
-      throw new InternalServerErrorException(
-        `HTTP request to book search service failed`,
+      this.logger.log('Request ');
+      const response: BookSearchResponse = await firstValueFrom(
+        this.bookSearchClient.search(request) as Observable<BookSearchResponse>,
       );
+      this.logger.log({ response: response });
+      return this.#mapGrpcToDto(response);
+    } catch (error) {
+      throw error;
     }
+  }
+  #mapGrpcToDto(response: BookSearchResponse): SearchResponseDto {
+    return {
+      apiProvider: searchApiToProviderName(response.apiProvider),
+      totalNumber: response.totalNumber,
+      limit: response.limit ?? 0,
+      offset: response.offset ?? 0,
+      result: response.result
+        ? response.result.map((transientBook) => {
+            const bookNoId = transientBookToBook(transientBook);
+            return {
+              ...bookNoId,
+              id: transientBook.googleBookId,
+            };
+          })
+        : [],
+    };
   }
 }

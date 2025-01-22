@@ -6,20 +6,24 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { BookSearchArgs } from './dto/book-search.args';
 import { BookFindArgs } from './dto/book-find.args';
+import { SearchResponseDto } from './models/search-response.model';
+import { GqlAuthGuard } from '../auth/guards/gcl.guard';
 
 @Resolver('Book')
 export class BooksResolver {
   constructor(private readonly booksService: BooksService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(GqlAuthGuard)
   @Query(() => BookModel, { nullable: true })
   async findBook(@Args() bookFindArgs?: BookFindArgs): Promise<Book | null> {
     return this.booksService.findOne(bookFindArgs);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Query(() => [BookModel], { nullable: true })
-  searchBooks(@Args() bookSearchArgs: BookSearchArgs): Promise<Book[]> {
+  @UseGuards(GqlAuthGuard)
+  @Query(() => SearchResponseDto, { nullable: true })
+  searchBooks(
+    @Args() bookSearchArgs: BookSearchArgs,
+  ): Promise<SearchResponseDto> {
     return this.booksService.search(bookSearchArgs);
   }
 }

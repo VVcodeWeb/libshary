@@ -11,6 +11,8 @@ const configuration = (): ConfigurationType => ({
     !process.env.DATA || process.env.NODE_ENV === 'production'
       ? false
       : process.env.DATA === 'true',
+  booksearch_grpc: process.env.BOOKSEARCH_GRPC || '0.0.0.0:50051',
+  rabbitmq_url: process.env.RABBITMQ_URL as string,
 });
 
 export interface ConfigurationType {
@@ -20,6 +22,8 @@ export interface ConfigurationType {
   google_client_id: string;
   google_redirect_url: string;
   book_search_url: string;
+  booksearch_grpc: string;
+  rabbitmq_url: string;
 }
 
 export const validate = (config: Record<string, any>) => {

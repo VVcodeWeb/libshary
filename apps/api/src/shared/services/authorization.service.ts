@@ -36,6 +36,7 @@ export class AuthorizationService {
         where: { id: sectionOrId },
         include: { shelf: true },
       });
+      if (!section) return false;
     } else {
       section = sectionOrId;
     }

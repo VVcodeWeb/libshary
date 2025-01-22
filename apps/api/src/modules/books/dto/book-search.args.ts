@@ -1,19 +1,11 @@
-import { SearchApi } from '@libshary/shared-types';
 import { ArgsType, Field, Int, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsOptional, IsString, IsArray } from 'class-validator';
-registerEnumType(SearchApi, {
-  name: 'SearchApi',
-});
+import { IsInt, IsOptional, IsString, IsArray } from 'class-validator';
+
 @ArgsType()
 export class BookSearchArgs {
   @Field({ nullable: true })
   @IsString()
   q: string;
-
-  @Field(() => SearchApi, { nullable: true })
-  @IsOptional()
-  @IsEnum(SearchApi)
-  api?: SearchApi;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()

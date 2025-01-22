@@ -1,30 +1,43 @@
-import { BookQueryReponseDto, SearchApi } from '@libshary/shared-types';
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
+import * as grpc from '@grpc/grpc-js';
+
 import {
   Counter,
   Histogram,
   collectDefaultMetrics,
   register,
 } from 'prom-client';
+import { Status } from '@grpc/grpc-js/build/src/constants';
+import { SearchApi } from '@libshary/grpc/generated/booksearch';
 
 const requestCounter = new Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status'],
+  labelNames: ['service', 'status'],
 });
 
 const searchCounter = new Counter({
   name: 'provider_searches_total',
   help: 'Total number of searches per provider',
-  labelNames: ['provider', 'status'],
+  labelNames: ['service', 'provider', 'status'],
 });
 
 const responseTimeHistogram = new Histogram({
   name: 'http_response_time_seconds',
   help: 'Response time in seconds',
-  labelNames: ['method', 'route', 'status'],
+  labelNames: ['service', 'status'],
 });
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    grpcMetricsInterceptor: (
+      call: grpc.ServerUnaryCall<any, any>,
+      callback: grpc.sendUnaryData<any>,
+      next: () => Promise<void>,
+    ) => Promise<void>;
+  }
+}
 
 async function promMetrics(fastify: FastifyInstance) {
   collectDefaultMetrics({
@@ -35,42 +48,48 @@ async function promMetrics(fastify: FastifyInstance) {
     reply.header('Content-Type', register.contentType);
     return await register.metrics();
   });
-  fastify.addHook('onRequest', (req, reply, done) => {
-    const { method, status, url } = retrieveRequestData(req, reply);
 
-    if (url === '/metrics' || url === '/health') {
-      done();
+  const grpcMetricsInterceptor = async (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>,
+    next: () => Promise<void>,
+  ) => {
+    const start = process.hrtime();
+    const status = grpc.status.OK.toString();
+    const service = call.getPath();
+    fastify.log.info({ service });
+    try {
+      await next();
+    } catch (err) {
+      const errorStatus = err.code || grpc.status.UNKNOWN;
+      requestCounter.labels(service, errorStatus).inc();
+      throw err;
     }
-    requestCounter.labels(method, url, status).inc();
-    done();
-  });
 
-  fastify.addHook('onResponse', (req, reply, done) => {
-    const { method, status, url } = retrieveRequestData(req, reply);
-    const responseTime = reply.getResponseTime() / 1000;
-    responseTimeHistogram.labels(method, url, status).observe(responseTime);
-    done();
-  });
+    const diff = process.hrtime(start);
+    const responseTime = diff[0] + diff[1] / 1e9;
 
-  fastify.addHook(
-    'onSend',
-    (req, reply, payload: BookQueryReponseDto, done) => {
-      const route = req.routerPath;
-      const status = reply.statusCode;
-      if (route.startsWith('/search')) {
-        searchCounter.labels(payload.api_provider, String(status)).inc();
-      }
-      done();
-    },
-  );
-
-  const retrieveRequestData = (req: FastifyRequest, reply: FastifyReply) => {
-    return {
-      method: req.raw.method ?? 'unknown',
-      url: req.raw.url ?? 'unknown',
-      status: String(reply.statusCode),
-    };
+    responseTimeHistogram.labels(service, status).observe(responseTime);
+    requestCounter.labels(service, status).inc();
+    next();
   };
+
+  const apiProviderMetrics = ({
+    service,
+    provider,
+    status,
+  }: {
+    service: string;
+    provider: SearchApi;
+    status: Status;
+  }) => {
+    const providerName =
+      provider === SearchApi.GOOGLE_BOOKS ? 'google_books' : 'open_library';
+    searchCounter.labels(service, providerName, status.toString()).inc();
+  };
+
+  fastify.decorate('apiProviderMetrics', apiProviderMetrics);
+  fastify.decorate('grpcMetricsInterceptor', grpcMetricsInterceptor);
 }
 
-export default fp(promMetrics, { name: 'prom-metrics' });
+export default fp(promMetrics, { name: 'metrics' });

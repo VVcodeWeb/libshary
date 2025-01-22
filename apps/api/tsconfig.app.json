@@ -21,7 +21,11 @@
     "composite": true,
     "noImplicitAny": false
   },
-  "include": ["src/**/*.ts", "../../libs/shared-types/src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../../libs/shared-types/src/**/*.ts",
+    "../../libs/grpc/src/**/*.ts"
+  ],
   "exclude": [
     "jest-config.ts",
     "src/**/*.spec.ts",

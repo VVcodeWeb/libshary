@@ -4,19 +4,24 @@ import {
   OpenLibBookResponse,
   OpenLibSearchQuery,
 } from '../dto/openlib-books';
-import {
-  BookQueryReponseDto,
-  BookQueryRequestDto,
-  SearchApi,
-  TransientBookModel,
-} from '@libshary/shared-types';
-import { catchError, from, map, Observable } from 'rxjs';
+import { Observable, map, from, catchError } from 'rxjs';
+import { SearchApi, TransientBook } from '@libshary/grpc/generated/booksearch';
+
+export interface SearchQuery {
+  q: string;
+  api?: SearchApi;
+  limit?: number;
+  offset?: number;
+  bookId?: string;
+  tags?: string[];
+}
 
 export class OpenLibrary {
   private readonly logger: any;
   private readonly url: string;
   public readonly defaultLimit;
   public readonly defaultOffset;
+
   constructor({
     url = 'https://openlibrary.org/search.json',
     limit = 10,
@@ -35,8 +40,8 @@ export class OpenLibrary {
   }
 
   search(
-    serviceQuery: BookQueryRequestDto,
-  ): Observable<{ total_number: number; result: TransientBookModel[] }> {
+    serviceQuery: SearchQuery,
+  ): Observable<{ total_number: number; result: TransientBook[] }> {
     const query = this.#queryToOpenLibQuery(serviceQuery);
 
     if (serviceQuery.bookId) {
@@ -53,7 +58,7 @@ export class OpenLibrary {
     );
   }
 
-  #queryToOpenLibQuery(query: BookQueryRequestDto): OpenLibSearchQuery {
+  #queryToOpenLibQuery(query: SearchQuery): OpenLibSearchQuery {
     return {
       q: query.q,
       limit: query.limit ?? this.defaultLimit,
@@ -102,27 +107,24 @@ export class OpenLibrary {
       }),
     );
   }
-  #openLibBookToBook = (openLibBook: OpenLibBook): TransientBookModel => {
-    return {
-      title: 'not implemented',
-      authors: [],
-    };
+
+  #openLibBookToBook = (openLibBook: OpenLibBook): TransientBook => {
+    let book: TransientBook;
+    return book;
+    // return {
+    //   title: openLibBook.title,
+    //   authors: openLibBook.author_name,
+    //   description: '', // Open Library does not provide a description
+    //   publishedAt: new Date(openLibBook.first_publish_year).toISOString(),
+    //   pageCount: openLibBook.number_of_pages_median,
+    //   imageLinks: openLibBook.cover_i
+    //     ? `https://covers.openlibrary.org/b/id/${openLibBook.cover_i}-L.jpg`
+    //     : '',
+    //   isbn10: openLibBook.isbn ? openLibBook.isbn[0] : '',
+    //   isbn13: openLibBook.isbn ? openLibBook.isbn[1] : '',
+    //   categories: openLibBook.subject ? [openLibBook.subject] : [],
+    //   publisher: openLibBook.publisher ? openLibBook.publisher[0] : '',
+    //   googleBookId: openLibBook.key,
+    // };
   };
 }
-
-// return {
-//   title: openLibBook.title,
-//   authors: openLibBook.author_name,
-//   description: '', // Open Library does not provide a description
-//   publishedAt: new Date(openLibBook.first_publish_year),
-//   pageCount: openLibBook.number_of_pages_median,
-//   imageLinks: openLibBook.cover_i
-//   isbn10: openLibBook.identifiers.isbn_10
-//     ? openLibBook.identifiers.isbn_10[0]
-//     : null,
-//   isbn13: openLibBook.identifiers.isbn_13
-//     ? openLibBook.identifiers.isbn_13[0]
-//     : null,
-//   publisher: openLibBook.
-//   categories: openLibBook.subjects
-// };

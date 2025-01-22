@@ -38,10 +38,4 @@ export class BookModel {
 
   @Field(() => [String])
   categories: Book['categories'];
-
-  @Field(() => Date)
-  createdAt: Book['createdAt'];
-
-  @Field(() => Date)
-  updatedAt: Book['updatedAt'];
 }

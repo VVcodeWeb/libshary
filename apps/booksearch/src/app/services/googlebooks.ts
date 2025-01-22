@@ -1,8 +1,3 @@
-import {
-  BookQueryRequestDto,
-  TransientBookModel,
-  TransientBookSchema,
-} from '@libshary/shared-types';
 import axios from 'axios';
 import { Observable, from, catchError } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,6 +6,16 @@ import {
   GoogleBooksVolumes,
   GoogleBooksVolume,
 } from '../dto/google-books';
+import { SearchApi, TransientBook } from '@libshary/grpc/generated/booksearch';
+
+export interface SearchQuery {
+  q: string;
+  api?: SearchApi;
+  limit?: number;
+  offset?: number;
+  bookId?: string;
+  tags?: string[];
+}
 
 export class GoogleBooks {
   private readonly logger: any;
@@ -39,32 +44,32 @@ export class GoogleBooks {
   }
 
   search(
-    serviceQuery: BookQueryRequestDto,
-  ): Observable<{ total_number: number; result: TransientBookModel[] }> {
+    serviceQuery: SearchQuery,
+  ): Observable<{ totalNumber: number; result: TransientBook[] }> {
     const query = this.#queryToGoogleQuery(serviceQuery);
     const url = this.#buildUrl(query);
     return this.#fetch<GoogleBooksVolumes>(url).pipe(
       map((data: GoogleBooksVolumes) => {
-        if (data.kind !== 'books#volumes' || data.items === undefined) {
+        if (data.kind !== 'books#volumes') {
           this.logger.error(`Unexpected response from Google Books API`, {
             data,
           });
           return {
             result: [],
-            total_number: 0,
+            totalNumber: 0,
           };
         }
-        const books = data.items.map((item) =>
-          this.#googleToTransientBook(item),
-        );
+        const books = data.items
+          ? data.items.map((item) => this.#googleToTransientBook(item))
+          : [];
         return {
           result: books,
-          total_number: data.totalItems,
+          totalNumber: data.totalItems,
         };
       }),
     );
   }
-  findById(id: string): Observable<TransientBookModel> {
+  findById(id: string): Observable<TransientBook> {
     const url = this.#buildUrl({ volumeId: id });
     return this.#fetch<GoogleBooksVolume>(url).pipe(
       map((data) => {
@@ -76,7 +81,7 @@ export class GoogleBooks {
     );
   }
 
-  #queryToGoogleQuery = (query: BookQueryRequestDto): GoogleQuery => {
+  #queryToGoogleQuery = (query: SearchQuery): GoogleQuery => {
     return {
       q: query.q,
       maxResults: query.limit ?? this.defaultLimit,
@@ -115,27 +120,25 @@ export class GoogleBooks {
     );
   }
 
-  #googleToTransientBook = (
-    googleBook: GoogleBooksVolume,
-  ): TransientBookModel => {
+  #googleToTransientBook = (googleBook: GoogleBooksVolume): TransientBook => {
     const getISBN = (type: 'ISBN_10' | 'ISBN_13') => {
       return googleBook.volumeInfo.industryIdentifiers?.find(
         (id) => id.type === type,
       )?.identifier;
     };
-    const obj = {
+
+    return {
       title: googleBook.volumeInfo.title,
       authors: googleBook.volumeInfo.authors ?? [],
-      description: googleBook.volumeInfo.description,
-      publishedAt: googleBook.volumeInfo.publishedDate,
-      pageCount: googleBook.volumeInfo.pageCount,
-      imageLinks: googleBook.volumeInfo.imageLinks?.thumbnail,
-      isbn10: getISBN('ISBN_10'),
-      isbn13: getISBN('ISBN_13'),
-      publisher: googleBook.volumeInfo.publisher,
-      categories: googleBook.volumeInfo.categories,
+      description: googleBook.volumeInfo.description ?? '',
+      publishedAt: googleBook.volumeInfo.publishedDate ?? '',
+      pageCount: googleBook.volumeInfo.pageCount ?? 0,
+      imageLinks: googleBook.volumeInfo.imageLinks?.thumbnail ?? '',
+      isbn10: getISBN('ISBN_10') ?? '',
+      isbn13: getISBN('ISBN_13') ?? '',
+      categories: googleBook.volumeInfo.categories ?? [],
+      publisher: googleBook.volumeInfo.publisher ?? '',
       googleBookId: googleBook.id,
     };
-    return TransientBookSchema.parse(obj);
   };
 }

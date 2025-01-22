@@ -13,6 +13,7 @@ const configSchema = z.object({
   rabbitmq_url: z.string().url(),
   redis_url: z.string().url(),
   node_env: z.enum(['development', 'production']),
+  grpc_port: z.string(),
 });
 type configType = z.infer<typeof configSchema>;
 
@@ -31,6 +32,7 @@ export const autoConfig = {
     rabbitmq_url: process.env.RABBITMQ_URL as string,
     redis_url: process.env.REDIS_URL as string,
     node_env: (process.env.NODE_ENV = 'development'),
+    grpc_port: process.env.GRPC_PORT || '50051',
   },
 };
 export default fp(config, { name: 'config' });

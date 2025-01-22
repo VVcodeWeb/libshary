@@ -19,6 +19,10 @@ export class SectionsBooksRepository {
   async create({ data }: { data: Prisma.SectionBookCreateArgs['data'] }) {
     return this.prisma.sectionBook.create({
       data,
+      include: {
+        book: true,
+        section: true,
+      },
     });
   }
 

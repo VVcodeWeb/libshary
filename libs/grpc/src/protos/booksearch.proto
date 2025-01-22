@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package booksearch;
+
+enum SearchApi {
+    GOOGLE_BOOKS = 0;
+    OPENLIB = 1;
+}
+
+message BookSearchRequest {
+    string q = 1;
+    SearchApi apiProvider = 2;
+    int32 limit = 3;
+    int32 offset = 4;
+    repeated string tags = 6;
+}
+
+message BookSearchByIdRequest {
+    string id = 1;
+    SearchApi apiProvider = 2;
+}
+
+message TransientBook {
+    string title = 1;
+    repeated string authors = 2;
+    string description = 3;
+    string publishedAt = 4;
+    int32 pageCount = 5;
+    string imageLinks = 6;
+    string isbn10 = 7;
+    string isbn13 = 8;
+    repeated string categories = 9;
+    string publisher = 10;
+    string googleBookId = 11;
+}
+
+message BookSearchResponse {
+    SearchApi apiProvider = 1;
+    int32 totalNumber = 2;
+    int32 limit = 3;
+    int32 offset = 4;
+    repeated TransientBook result = 5;
+}
+message BookSearchByIdResponse {
+    TransientBook book = 1;
+}
+
+service BookSearch {
+    rpc Search (BookSearchRequest) returns (BookSearchResponse);
+    rpc SearchById (BookSearchByIdRequest) returns (BookSearchByIdResponse);
+}

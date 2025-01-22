@@ -1,47 +1,79 @@
-import { BookQueryRequestDto, SearchApi } from '@libshary/shared-types';
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import * as grpc from '@grpc/grpc-js';
 import Redis from 'ioredis';
 import fp from 'fastify-plugin';
+import { FastifyInstance } from 'fastify';
+
 interface RateLimitOptions {
   max: number;
   timeWindow: number;
   redisUrl: string;
 }
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    rateLimitInterceptor: (
+      call: grpc.ServerUnaryCall<any, any>,
+      callback: grpc.sendUnaryData<any>,
+      next: () => Promise<void>,
+    ) => Promise<void>;
+  }
+}
+
 async function rateLimitPlugin(
   fastify: FastifyInstance,
   options: RateLimitOptions,
 ) {
-  fastify.log.info(`rateLimitPlugin options ${options}`);
-  const redisUrl = options.redisUrl ?? fastify.config.redis_url; //TODO: auto config doesnt as function
-  const redis = new Redis(redisUrl);
+  const redis = new Redis(options.redisUrl || fastify.config.redis_url);
 
-  fastify.addHook(
-    'onRequest',
+  fastify.decorate(
+    'rateLimitInterceptor',
     async (
-      req: FastifyRequest<{ Querystring: BookQueryRequestDto }>,
-      reply,
+      call: grpc.ServerUnaryCall<any, any>,
+      callback: grpc.sendUnaryData<any>,
+      next: () => Promise<void>,
     ) => {
-      if (!req.raw.url?.startsWith('/search')) return;
+      try {
+        const provider =
+          call.request.api === 1 ? 'open_library' : 'google_books';
+        const key = `rate-limit:${provider}`;
+        const current = await redis.incr(key);
 
-      const provider = req.query.api ?? SearchApi.google_books; //TODO: handle default provider logic elswhere
-      const key = `rate-limit:${provider}`;
-      const current = await redis.incr(key);
-      if (current === 1) {
-        await redis.expire(key, options.timeWindow);
-      }
+        if (current === 1) {
+          await redis.expire(key, options.timeWindow);
+        }
 
-      if (current > options.max) {
-        reply.status(429).send({ message: 'Rate limit exceeded' });
+        if (current > options.max) {
+          const error = new grpc.StatusBuilder()
+            .withCode(grpc.status.RESOURCE_EXHAUSTED)
+            .withDetails(`Rate limit for ${provider} exceeded`)
+            .build();
+          return callback(error, null);
+        }
+
+        const remaining = Math.max(0, options.max - current);
+        const reset = (await redis.pttl(key)) / 1000;
+
+        const metadata = new grpc.Metadata();
+        metadata.set('x-ratelimit-limit', options.max.toString());
+        metadata.set('x-ratelimit-remaining', remaining.toString());
+        metadata.set('x-ratelimit-reset', reset.toString());
+        call.sendMetadata(metadata);
+
+        await next();
+      } catch (err) {
+        fastify.log.error(err);
+        const error = new grpc.StatusBuilder()
+          .withCode(grpc.status.INTERNAL)
+          .withDetails('Internal server error during rate limit')
+          .build();
+        callback(error, null);
       }
-      reply.header('X-RateLimit-Limit', options.max);
-      reply.header('X-RateLimit-Remaining', Math.max(0, options.max - current));
-      reply.header('X-RateLimit-Reset', (await redis.pttl(key)) / 1000);
     },
   );
 }
 export const autoConfig = {
-  max: 25,
-  timeWindow: 60000,
+  max: 100,
+  timeWindow: 60,
 };
 export default fp(rateLimitPlugin, {
   name: 'rate-limit',

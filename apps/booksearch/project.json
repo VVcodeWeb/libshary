@@ -37,6 +37,7 @@
         }
       }
     },
+
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",

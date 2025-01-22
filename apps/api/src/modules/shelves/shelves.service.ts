@@ -3,7 +3,6 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthUser } from '@api/shared/models/user.model';
 import { CreateShelfInput, UpdateShelfInput } from './dto/shelves.input';
