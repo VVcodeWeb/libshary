@@ -16,5 +16,5 @@ export class SearchResponseDto {
   offset: number;
 
   @Field(() => [BookModel])
-  result: BookModel[];
+  books: BookModel[];
 }

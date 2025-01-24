@@ -16,18 +16,11 @@ async function bootstrap() {
       urls: [configuration().rabbitmq_url],
     },
   });
-
-  // app.connectMicroservice({
-  //   transport: Transport.GRPC,
-  //   options: {
-  //     package: 'booksearch',
-  //     protoPath: join(
-  //       process.cwd(),
-  //       'dist/libs/grpc/src/protos/booksearch.proto',
-  //     ),
-  //     url: configuration().booksearch_grpc,
-  //   },
-  // });
+  app.enableCors({
+    origin: 'http://localhost:4200', // Replace with your frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ZodFilter());
   await app.startAllMicroservices();

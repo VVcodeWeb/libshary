@@ -1,20 +1,67 @@
 'use client';
-import { createShelf } from '@web/actions/shelves/mutations';
-import { useActionState } from 'react';
 import { ColorSelection } from './ColorSelection';
 import { useTranslations } from 'next-intl';
-export type Color = 'red' | 'green' | 'blue';
+import { gql } from '@web/__generated__';
+import { useMutation } from '@apollo/client';
+import {
+  CreateShelfMutation,
+  CreateShelfMutationVariables,
+} from '@web/__generated__/graphql';
+import { ShelvesSidebar_Query } from '@web/actions/shelves/queries';
+import { useToast } from '@web/hooks/useToast';
+import { useModal } from '@web/hooks/useModal';
 
-//TODO: handle submition feedback, move useActionState to parent, not null data?
+export const CreateShelf = gql(`
+  mutation CreateShelf($createShelfInput: CreateShelfInput!) {
+    createShelf(createShelfInput: $createShelfInput) {
+      id
+      name
+    }
+  }
+`);
 export const DetailsStep = () => {
-  const [state, action] = useActionState(createShelf, null);
+  const [createShelf] = useMutation<
+    CreateShelfMutation,
+    CreateShelfMutationVariables
+  >(CreateShelf);
+  const { closeModal } = useModal();
+  const { showErrorToast, showSuccessToast } = useToast();
   const t = useTranslations('common');
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const privacy = formData.get('privacy') === 'on';
+    const description = formData.get('description') as string;
+    await createShelf({
+      variables: {
+        createShelfInput: {
+          name,
+          private: privacy,
+          description,
+          defaultSections: true,
+        },
+      },
+      refetchQueries: [{ query: ShelvesSidebar_Query }],
+      onCompleted: () => {
+        form.reset();
+        showSuccessToast(t('success'));
+        closeModal('add-shelf');
+      },
+      onError: (error) => {
+        console.error(error);
+        showErrorToast(t('error'));
+      },
+    });
+  };
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">
         {t('shelf-modal.details.title')}
       </h2>
-      <form action={action}>
+      <form onSubmit={onSubmit}>
         <div className="flex items-center gap-4 mb-4">
           <ColorSelection />
           <div className="flex-1">
@@ -53,9 +100,8 @@ export const DetailsStep = () => {
             className="textarea textarea-bordered w-full"
           />
         </div>
-        <p aria-live="polite">{state?.message}</p>
         <div className="modal-action justify-end">
-          <button type="submit" className="btn btn-primary" formAction={action}>
+          <button type="submit" className="btn btn-primary">
             {t('submit')}
           </button>
         </div>

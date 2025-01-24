@@ -4,6 +4,7 @@
   "sourceRoot": "apps/web/src",
   "projectType": "application",
   "tags": [],
+  "implicitDependencies": ["graphql"],
   "targets": {
     "build": {
       "executor": "@nx/next:build",
@@ -20,7 +21,13 @@
           "sourceMap": false,
           "generateLockfile": true
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "target": "codegen",
+          "projects": "graphql"
+        }
+      ]
     },
     "serve": {
       "executor": "@nx/next:server",
@@ -31,7 +38,13 @@
         "production": {
           "buildTarget": "web:build:production"
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "target": "codegen",
+          "projects": "graphql"
+        }
+      ]
     },
     "lint": {
       "executor": "@nx/eslint:lint",

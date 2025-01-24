@@ -1,4 +1,4 @@
-import { Field, ID, InputType } from '@nestjs/graphql';
+import { Field, ID, InputType, OmitType, PartialType } from '@nestjs/graphql';
 import { Section } from '@prisma/client';
 
 @InputType()
@@ -11,7 +11,6 @@ export class CreateSectionInput {
 }
 
 @InputType()
-export class UpdateSectionInput {
-  @Field({ nullable: true })
-  name?: string;
-}
+export class UpdateSectionInput extends PartialType(
+  OmitType(CreateSectionInput, ['shelfId']),
+) {}

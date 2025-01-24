@@ -1,9 +1,8 @@
-import { TransientBookModel } from '@libshary/shared-types';
 import { Observable } from 'rxjs';
 
 export class NytBooks {
   constructor() {}
-  search(query: string): Observable<TransientBookModel[]> {
-    return new Observable<TransientBookModel[]>((subscriber) => {});
+  search(query: string): Observable<any[]> {
+    return new Observable<any[]>((subscriber) => {});
   }
 }

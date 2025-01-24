@@ -1,15 +1,15 @@
 import { Resolver, Query, Mutation, Args, Info } from '@nestjs/graphql';
 import { ShelvesService } from './shelves.service';
 import { AuthUser } from '@api/shared/models/user.model';
-import { Shelf } from '@prisma/client';
 import { User } from '@api/shared/decorators/user.decorator';
-import { CreateShelfInput, UpdateShelfInput } from './dto/shelves.input';
-import { ShelfModel } from './models/shelves.model';
 import { Logger, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gcl.guard';
 import { GraphQLResolveInfo } from 'graphql';
-import { parseResolveInfo } from 'graphql-parse-resolve-info';
-import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
+import { ShelfModel } from '@api/modules/shelves/models/shelves.model';
+import {
+  CreateShelfInput,
+  UpdateShelfInput,
+} from '@api/modules/shelves/dto/shelves.input';
 
 @Resolver(() => ShelfModel)
 @UseGuards(GqlAuthGuard)
@@ -22,7 +22,7 @@ export class ShelvesResolver {
     @Args('createShelfInput') createShelfInput: CreateShelfInput,
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
-  ): Promise<Shelf> {
+  ): Promise<ShelfModel> {
     return this.shelvesService.create(createShelfInput, user, info);
   }
 
@@ -31,7 +31,7 @@ export class ShelvesResolver {
     @Args('id') id: string,
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
-  ): Promise<Shelf | null> {
+  ): Promise<ShelfModel | null> {
     return this.shelvesService.findOne(id, user, info);
   }
 
@@ -39,7 +39,7 @@ export class ShelvesResolver {
   async findAllShelves(
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
-  ): Promise<Shelf[]> {
+  ): Promise<ShelfModel[]> {
     return this.shelvesService.findAll(user, info);
   }
 
@@ -49,7 +49,7 @@ export class ShelvesResolver {
     @Args('updateShelfInput') updateShelfInput: UpdateShelfInput,
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
-  ): Promise<Shelf> {
+  ): Promise<ShelfModel> {
     return this.shelvesService.update(id, updateShelfInput, user, info);
   }
 
@@ -58,7 +58,7 @@ export class ShelvesResolver {
     @Args('id') id: string,
     @User() user: AuthUser,
     @Info() info: GraphQLResolveInfo,
-  ): Promise<Shelf> {
+  ): Promise<ShelfModel> {
     return this.shelvesService.remove(id, user, info);
   }
 }

@@ -4,9 +4,9 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SectionModel } from '@api/modules/sections/models/section.model';
 import { PrismaService } from '@api/modules/prisma/prisma.service';
 import { ShelfModel } from '@api/modules/shelves/models/shelves.model';
+import { SectionModel } from '@api/modules/sections/models/section.model';
 
 @Injectable()
 export class AuthorizationService {

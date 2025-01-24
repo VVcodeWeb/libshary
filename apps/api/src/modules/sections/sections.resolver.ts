@@ -2,13 +2,16 @@ import { Resolver, Query, Mutation, Args, Info } from '@nestjs/graphql';
 import { SectionsService } from './sections.service';
 import { AuthUser } from '@api/shared/models/user.model';
 import { Section } from '@prisma/client';
-import { CreateSectionInput, UpdateSectionInput } from './dto/sections.input';
-import { SectionModel } from './models/section.model';
 import { Logger, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gcl.guard';
 import { GraphQLResolveInfo } from 'graphql';
 import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
 import { User } from '@api/shared/decorators/user.decorator';
+import {
+  CreateSectionInput,
+  UpdateSectionInput,
+} from '@api/modules/sections/dto/sections.input';
+import { SectionModel } from '@api/modules/sections/models/section.model';
 
 @Resolver(() => SectionModel)
 @UseGuards(GqlAuthGuard)

@@ -1,4 +1,3 @@
-import { useModal } from '@web/hooks/useModal';
 import { createContext, useContext, useState } from 'react';
 
 export type Step<S> = {

@@ -1,12 +1,10 @@
-import { TransientBookModel, ShelfWithSections } from '@libshary/shared-types';
-import { Shelf } from '@prisma/client';
+import { SearchQueryBook } from '@web/components/modals/add-book/search-step/SearchStep';
 import { useSteps } from '@web/providers/StepsProvider';
 
 export type AddBookData = {
-  book: TransientBookModel | null;
-  shelf: Shelf;
-  sections: ShelfWithSections['sections'];
+  book: SearchQueryBook[number] | null;
   selectedSectionId: string;
+  shelfId: string;
 };
 
 export type AddBookSteps = 'search' | 'details';

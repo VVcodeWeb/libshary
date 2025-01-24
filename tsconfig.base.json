@@ -28,12 +28,13 @@
     "verbatimModuleSyntax": false,
     "paths": {
       "@api/*": ["apps/api/src/*"],
-      "@booksearch/*": ["apps/booksearch/src/*"],
-      "@libshary/grpc": ["libs/grpc/src/index.ts"],
-      "@libshary/grpc/*": ["libs/grpc/src/*"],
-      "@libshary/prisma": ["libs/prisma/src/index.ts"],
-      "@libshary/shared-types": ["libs/shared-types/src/index.ts"],
       "@web/*": ["apps/web/src/*"],
+      "@booksearch/*": ["apps/booksearch/src/*"],
+      "@libshary/graphql/*": ["libs/graphql/src/*"],
+      "@libshary/grpc/*": ["libs/grpc/src/*"],
+      "@libshary/i18n": ["libs/i18n/src/index.ts"],
+      "@libshary/prisma": ["libs/prisma/src/index.ts"],
+      "@libshary/ui/*": ["libs/ui/src/*"],
       "api-e2e/*": ["apps/api-e2e/src/*"],
       "web-e2e/*": ["apps/web-e2e/src/*"]
     }

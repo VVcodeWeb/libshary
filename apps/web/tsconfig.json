@@ -27,7 +27,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "env.d.ts"
+    "env.d.ts",
+    "../../libs/ui/src/**/*.{ts,tsx}",
+    "../../libs/i18n/src/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }

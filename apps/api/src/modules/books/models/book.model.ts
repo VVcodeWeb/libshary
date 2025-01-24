@@ -36,6 +36,6 @@ export class BookModel {
   @Field(() => String, { nullable: true })
   googleBookId?: Book['googleBookId'];
 
-  @Field(() => [String])
-  categories: Book['categories'];
+  @Field(() => [String], { nullable: true })
+  categories?: Book['categories'];
 }

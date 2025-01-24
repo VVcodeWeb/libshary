@@ -1,0 +1,25 @@
+{
+  "projects": {
+    "libs/gcl": {
+      "type": "library",
+      "root": "libs/libs/gcl",
+      "entryFile": "index",
+      "sourceRoot": "libs/libs/gcl/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/libs/gcl/tsconfig.lib.json"
+      }
+    },
+    "libs/schemas": {
+      "type": "library",
+      "root": "libs/libs/schemas",
+      "entryFile": "index",
+      "sourceRoot": "libs/libs/schemas/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/libs/schemas/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}

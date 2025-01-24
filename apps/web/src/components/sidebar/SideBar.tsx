@@ -1,18 +1,14 @@
 'use client';
 import React, { ReactElement, useState } from 'react';
-import ThemeToggle from './ThemeToggle';
+import ThemeToggle from './bar/ThemeToggle';
 import { Shelves } from './Shelves';
-import { ShelfWithSections } from '@libshary/shared-types';
-import { HomeNav } from './HomeNav';
-import { ExploreNav } from './ExploreNav';
-import { SquaresIcon } from '../icons/SquaresIcon';
-import { UserImageDropdown } from './UserImage';
-import { LanguageSwitch } from './LanguageSwitch';
-import { cn } from '@web/lib/utils';
+import { HomeNav } from './bar/HomeNav';
+import { ExploreNav } from './bar/ExploreNav';
+import { UserImageDropdown } from './bar/UserImage';
+import { LanguageSwitch } from './bar/LanguageSwitch';
+import { cn } from '@libshary/ui/utils';
+import { SquaresIcon } from '@libshary/ui/icons';
 
-interface SideBarProps {
-  shelves: ShelfWithSections[];
-}
 interface BarProps {
   children: React.ReactNode;
 }
@@ -22,7 +18,7 @@ interface ContentProps {
   isOpen?: boolean;
 }
 
-export function Sidebar({ shelves }: SideBarProps) {
+export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const toggle = () => setIsOpen((prev) => !prev);
   return (
@@ -57,7 +53,7 @@ export function Sidebar({ shelves }: SideBarProps) {
         </div>
       </Sidebar.Bar>
       <Sidebar.Content isOpen={isOpen}>
-        <Shelves shelves={shelves} />
+        <Shelves />
       </Sidebar.Content>
     </div>
   );

@@ -1,11 +1,28 @@
-import { BookWithSection } from '@libshary/shared-types';
+import { FragmentType, gql, useFragment } from '@web/__generated__';
 import Image from 'next/image';
 
+export const BookCard_BookFragment = gql(`
+    fragment BookCard_BookFragment on BookModel {
+      id
+      title
+      authors
+      description
+      publisher
+      pageCount
+      imageLinks
+      isbn10
+      isbn13
+      googleBookId
+      categories
+    }
+  `);
 type BookCardProps = {
-  book: BookWithSection;
+  book: FragmentType<typeof BookCard_BookFragment>;
 };
 
-export const BookCard = ({ book }: BookCardProps) => {
+export const BookCard = (props: BookCardProps) => {
+  const book = useFragment(BookCard_BookFragment, props.book);
+  if (!book) return <div>Not found</div>;
   return (
     <div className="card shadow-lg bg-base-300 w-44 h-80">
       <figure className="relative w-44 h-60">

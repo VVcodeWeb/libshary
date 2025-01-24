@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@web/providers/AuthProvider';
 import { getServerSession } from 'next-auth';
-import { isValidLocale } from '@web/lib/i18n/i18-config';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -12,6 +11,7 @@ import { ThemeProvider } from '@web/providers/ThemeProvider';
 import { ToastProvider } from '@web/providers/ToastProvider';
 import { ModalProvider } from '@web/providers/ModalProvider';
 import ApolloProvider from '@web/providers/ApolloProvider';
+import { isValidLocale } from '@libshary/i18n';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -46,17 +46,17 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ApolloProvider>
-          <NextIntlClientProvider messages={messages}>
-            <AuthProvider session={session}>
+        <NextIntlClientProvider messages={messages}>
+          <AuthProvider session={session}>
+            <ApolloProvider>
               <ThemeProvider>
                 <ModalProvider>
                   <ToastProvider>{children}</ToastProvider>
                 </ModalProvider>
               </ThemeProvider>
-            </AuthProvider>
-          </NextIntlClientProvider>
-        </ApolloProvider>
+            </ApolloProvider>
+          </AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

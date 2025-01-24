@@ -1,0 +1,33 @@
+{
+  "name": "graphql",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/graphql/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/graphql",
+        "tsConfig": "libs/graphql/tsconfig.lib.json",
+        "packageJson": "libs/graphql/package.json",
+        "main": "libs/graphql/src/index.ts",
+        "assets": ["libs/graphql/*.md", "libs/graphql/**/*.gql"]
+      }
+    },
+    "generate-schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -r tsconfig-paths/register --project libs/graphql/tsconfig.lib.json libs/graphql/src/generate-schema.ts"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "graphql-codegen --config libs/graphql/src/codegen.ts --verbose"
+      },
+      "dependsOn": ["generate-schema"]
+    }
+  }
+}

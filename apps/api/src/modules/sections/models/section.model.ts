@@ -1,7 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Section, SectionBook } from '@prisma/client';
-import { SectionBookModel } from '../../sections-books/models/section-book.model';
 import { ShelfModel } from '@api/modules/shelves/models/shelves.model';
+import { SectionBookModel } from '@api/modules/sections-books/models/section-book.model';
 
 @ObjectType()
 export class SectionModel {
@@ -23,6 +23,6 @@ export class SectionModel {
   @Field(() => Date)
   updatedAt: Section['updatedAt'];
 
-  @Field(() => [SectionBookModel], { nullable: 'itemsAndList' })
+  @Field(() => [SectionBookModel])
   books?: SectionBook[];
 }

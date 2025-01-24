@@ -25,6 +25,6 @@ export class ShelfModel {
   @Field(() => Date)
   updatedAt: Shelf['updatedAt'];
 
-  @Field(() => [SectionModel], { nullable: 'itemsAndList' })
-  sections?: Section[];
+  @Field(() => [SectionModel])
+  sections?: SectionModel[];
 }

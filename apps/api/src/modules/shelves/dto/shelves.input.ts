@@ -1,34 +1,32 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, OmitType, PartialType } from '@nestjs/graphql';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateShelfInput {
   @Field()
+  @IsString()
   name: string;
 
   @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
   description?: string;
 
   @Field(() => Boolean)
+  @IsBoolean()
   private: boolean;
 
   @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
   color?: string;
 
   @Field(() => Boolean)
+  @IsBoolean()
   defaultSections: boolean;
 }
 
 @InputType()
-export class UpdateShelfInput {
-  @Field({ nullable: true })
-  name?: string;
-
-  @Field({ nullable: true })
-  description?: string;
-
-  @Field({ nullable: true })
-  private?: boolean;
-
-  @Field({ nullable: true })
-  color?: string;
-}
+export class UpdateShelfInput extends PartialType(
+  OmitType(CreateShelfInput, ['defaultSections']),
+) {}

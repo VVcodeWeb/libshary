@@ -26,7 +26,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     SectionsBooksModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'dist/libs/graphql/schema.gql'),
+      autoSchemaFile: join(process.cwd(), 'libs/graphql/src/schema.gql'),
       playground: true,
     }),
   ],

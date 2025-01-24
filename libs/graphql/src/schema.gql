@@ -1,0 +1,118 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type BookModel {
+  id: ID!
+  title: String!
+  authors: [String!]!
+  description: String
+  publishedAt: DateTime
+  publisher: String
+  pageCount: Float
+  imageLinks: String
+  isbn10: String
+  isbn13: String
+  googleBookId: String
+  categories: [String!]
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type SectionBookModel {
+  id: ID!
+  sectionId: ID!
+  bookId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  book: BookModel!
+  section: SectionModel!
+}
+
+type SectionModel {
+  id: ID!
+  name: String!
+  shelfId: ID!
+  shelf: ShelfModel!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  books: [SectionBookModel!]!
+}
+
+type ShelfModel {
+  id: ID!
+  name: String!
+  description: String
+  private: Boolean!
+  ownerId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  sections: [SectionModel!]!
+}
+
+type SearchResponseDto {
+  apiProvider: String!
+  totalNumber: Float!
+  limit: Float!
+  offset: Float!
+  books: [BookModel!]!
+}
+
+type Query {
+  findShelf(id: String!): ShelfModel
+  findAllShelves: [ShelfModel!]
+  findBook(id: ID, googleBookId: ID): BookModel
+  searchBooks(q: String, limit: Int, offset: Int, tags: [String!]): SearchResponseDto
+  findSection(id: String!): SectionModel
+  findAllSections: [SectionModel!]
+  findSectionBooks(sectionId: String!): [SectionBookModel!]
+  findAllSectionBooks: [SectionBookModel!]
+}
+
+type Mutation {
+  createShelf(createShelfInput: CreateShelfInput!): ShelfModel!
+  updateShelf(id: String!, updateShelfInput: UpdateShelfInput!): ShelfModel!
+  removeShelf(id: String!): ShelfModel!
+  createSection(createSectionInput: CreateSectionInput!): SectionModel!
+  updateSection(id: String!, updateSectionInput: UpdateSectionInput!): SectionModel!
+  removeSection(id: String!): SectionModel!
+  createSectionBook(createSectionBookInput: CreateSectionBookInput!): SectionBookModel!
+  updateSectionBook(updateSectionBookInput: UpdateSectionBookInput!, id: String!): SectionBookModel!
+  removeSectionBook(sectionId: String!, bookId: String!): SectionBookModel!
+}
+
+input CreateShelfInput {
+  name: String!
+  description: String
+  private: Boolean!
+  color: String
+  defaultSections: Boolean!
+}
+
+input UpdateShelfInput {
+  name: String
+  description: String
+  private: Boolean
+  color: String
+}
+
+input CreateSectionInput {
+  name: String!
+  shelfId: ID!
+}
+
+input UpdateSectionInput {
+  name: String
+}
+
+input CreateSectionBookInput {
+  googleBookId: ID!
+  sectionId: ID!
+}
+
+input UpdateSectionBookInput {
+  sectionId: String!
+}

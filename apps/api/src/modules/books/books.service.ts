@@ -1,10 +1,7 @@
 import { Injectable, Logger, Inject, OnModuleInit } from '@nestjs/common';
 import { BooksRepository } from './books.repository';
-import { BookSearchArgs } from './dto/book-search.args';
 import { firstValueFrom, Observable } from 'rxjs';
 import { ClientGrpc } from '@nestjs/microservices';
-import { BookFindArgs } from './dto/book-find.args';
-import { SearchResponseDto } from './models/search-response.model';
 import {
   searchApiToProviderName,
   transientBookToBook,
@@ -15,8 +12,10 @@ import {
   SearchApi,
   BookSearchResponse,
 } from '@libshary/grpc/generated/booksearch';
-import { GraphQLResolveInfo } from 'graphql';
-import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
+import { BookFindArgs } from '@api/modules/books/dto/book-find.args';
+import { BookSearchArgs } from '@api/modules/books/dto/book-search.args';
+import { SearchResponseDto } from '@api/modules/books/models/search-response.model';
+import { BookModel } from '@api/modules/books/models/book.model';
 
 @Injectable()
 export class BooksService implements OnModuleInit {
@@ -58,10 +57,8 @@ export class BooksService implements OnModuleInit {
       const response: BookSearchResponse = await firstValueFrom(
         this.bookSearchClient.search(request) as Observable<BookSearchResponse>,
       );
-      return {
-        ...this.#mapGrpcToDto(response),
-        include,
-      };
+      this.logger.log({ response: this.#mapGrpcToDto(response) });
+      return this.#mapGrpcToDto(response);
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -73,15 +70,15 @@ export class BooksService implements OnModuleInit {
       totalNumber: response.totalNumber,
       limit: response.limit ?? 0,
       offset: response.offset ?? 0,
-      result: response.result
-        ? response.result.map((transientBook) => {
+      books: !response.result
+        ? []
+        : response.result.map((transientBook) => {
             const bookNoId = transientBookToBook(transientBook);
             return {
               ...bookNoId,
               id: transientBook.googleBookId,
             };
-          })
-        : [],
+          }),
     };
   }
 }

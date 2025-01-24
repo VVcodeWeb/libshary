@@ -1,5 +1,6 @@
 'use client';
 //TODO: Add color selection component
+export type Color = 'red' | 'green' | 'blue';
 export const ColorSelection = () => {
   return (
     <div className="flex items-center">

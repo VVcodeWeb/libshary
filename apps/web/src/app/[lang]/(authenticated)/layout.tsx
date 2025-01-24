@@ -1,20 +1,18 @@
-import { getShelfs } from '@web/actions/shelves/queries';
+import { ShelvesSidebar_Query } from '@web/actions/shelves/queries';
 import { Sidebar } from '@web/components/sidebar/SideBar';
+import { PreloadQuery } from '@web/lib/apollo/client';
 
 export default async function ShelvesLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const shelves = await getShelfs();
-  console.log({ test: 'Layout render' });
-  if ('error' in shelves) {
-    return <div>{shelves.error}</div>;
-  }
   return (
-    <div className="flex h-full">
-      <Sidebar shelves={shelves} />
-      <div className="flex-grow bg-base-100">{children}</div>
-    </div>
+    <PreloadQuery query={ShelvesSidebar_Query}>
+      <div className="flex h-full">
+        <Sidebar />
+        <div className="flex-grow bg-base-100">{children}</div>
+      </div>
+    </PreloadQuery>
   );
 }

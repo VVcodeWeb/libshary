@@ -15,7 +15,6 @@ import {
 } from './dto/section-book.input';
 import { AuthorizationService } from '@api/shared/services/authorization.service';
 import { ClientGrpc } from '@nestjs/microservices';
-import { Book } from '@prisma/client';
 import { transientBookToBook } from '@api/shared/mappers/grpc.mapper';
 import {
   BookSearchClient,

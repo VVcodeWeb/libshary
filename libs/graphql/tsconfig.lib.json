@@ -1,0 +1,34 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "composite": true,
+    "types": ["node"],
+    "target": "es2021",
+    "moduleResolution": "node",
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    "paths": {
+      "@api/*": ["apps/api/src/*"],
+      "@booksearch/*": ["apps/booksearch/src/*"],
+      "@libshary/graphql/*": ["libs/graphql/src/*"],
+      "@libshary/grpc/*": ["libs/grpc/src/*"],
+      "@libshary/prisma": ["libs/prisma/src/index.ts"],
+      "@web/*": ["apps/web/src/*"],
+      "api-e2e/*": ["apps/api-e2e/src/*"],
+      "web-e2e/*": ["apps/web-e2e/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "../../apps/api/src/**/*.ts"]
+}

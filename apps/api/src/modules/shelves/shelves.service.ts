@@ -5,11 +5,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import { AuthUser } from '@api/shared/models/user.model';
-import { CreateShelfInput, UpdateShelfInput } from './dto/shelves.input';
 import { ShelvesRepository } from './shelves.repository';
 import { AuthorizationService } from '@api/shared/services/authorization.service';
 import { GraphQLResolveInfo } from 'graphql';
 import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
+import {
+  CreateShelfInput,
+  UpdateShelfInput,
+} from '@api/modules/shelves/dto/shelves.input';
 
 @Injectable()
 export class ShelvesService {

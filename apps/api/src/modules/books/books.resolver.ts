@@ -1,14 +1,14 @@
 import { Resolver, Query, Args, Info } from '@nestjs/graphql';
 import { BooksService } from './books.service';
 import { Book } from '@prisma/client';
-import { BookModel } from './models/book.model';
 import { UseGuards } from '@nestjs/common';
-import { BookSearchArgs } from './dto/book-search.args';
-import { BookFindArgs } from './dto/book-find.args';
-import { SearchResponseDto } from './models/search-response.model';
 import { GqlAuthGuard } from '../auth/guards/gcl.guard';
 import { GraphQLResolveInfo } from 'graphql';
 import { generatePrismaInclude } from '@api/shared/utils/graphql-field-parser';
+import { BookFindArgs } from '@api/modules/books/dto/book-find.args';
+import { BookSearchArgs } from '@api/modules/books/dto/book-search.args';
+import { BookModel } from '@api/modules/books/models/book.model';
+import { SearchResponseDto } from '@api/modules/books/models/search-response.model';
 
 @Resolver('Book')
 export class BooksResolver {

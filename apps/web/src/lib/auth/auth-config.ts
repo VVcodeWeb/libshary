@@ -1,8 +1,8 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { NextAuthOptions } from 'next-auth';
 import { signJwt } from './jwt';
-import { prisma } from '../prisma/temp-prisma';
 import GoogleProvider from 'next-auth/providers/google';
+import { prisma } from '@libshary/prisma';
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET || 'secret',
