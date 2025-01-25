@@ -11,10 +11,10 @@ import { join } from 'path';
         transport: Transport.GRPC,
         options: {
           package: 'booksearch',
-          url: '0.0.0.0:50051',
+          url: configuration().booksearch_grpc,
           protoPath: join(
             process.cwd(),
-            'dist/libs/grpc/src/protos/booksearch.proto',
+            'libs/grpc/src/protos/booksearch.proto',
           ),
         },
       },

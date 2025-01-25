@@ -1,7 +1,8 @@
 FROM docker.io/node:lts-alpine as builder
 WORKDIR /app
 COPY dist/apps/booksearch ./
-RUN npm ci 
+
+RUN npm instal --omit=dev && npm install @bufbuild/protobuf
 
 FROM docker.io/node:lts-alpine
 WORKDIR /app

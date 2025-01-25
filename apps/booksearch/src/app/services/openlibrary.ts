@@ -5,7 +5,10 @@ import {
   OpenLibSearchQuery,
 } from '../dto/openlib-books';
 import { Observable, map, from, catchError } from 'rxjs';
-import { SearchApi, TransientBook } from '@libshary/grpc/generated/booksearch';
+import {
+  SearchApi,
+  TransientBook,
+} from '@booksearch/__generated_proto__/booksearch';
 
 export interface SearchQuery {
   q: string;

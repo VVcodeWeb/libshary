@@ -2,14 +2,15 @@ import fp from 'fastify-plugin';
 import * as grpc from '@grpc/grpc-js';
 import { GoogleBooks } from '../services/googlebooks';
 import { OpenLibrary } from '../services/openlibrary';
+
+import { FastifyInstance } from 'fastify';
 import {
-  BookSearchService,
-  BookSearchServer,
-  BookSearchResponse,
   BookSearchByIdResponse,
+  BookSearchResponse,
+  BookSearchServer,
+  BookSearchService,
   SearchApi,
-} from '@libshary/grpc/generated/booksearch';
-import fastify, { FastifyInstance } from 'fastify';
+} from '@booksearch/__generated_proto__/booksearch';
 
 const googleBooksService = new GoogleBooks({
   url: process.env.GOOGLE_BOOKS_URL,

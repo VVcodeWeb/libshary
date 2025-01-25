@@ -51,3 +51,4 @@ libs/prisma/generated
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 docker-compose.local.yml
+libs/grpc/src/generated

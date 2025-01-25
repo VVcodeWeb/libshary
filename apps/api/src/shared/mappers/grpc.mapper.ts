@@ -1,5 +1,5 @@
+import { SearchApi, TransientBook } from '@api/__generated_proto__/booksearch';
 import { BookModel } from '@api/modules/books/models/book.model';
-import { SearchApi, TransientBook } from '@libshary/grpc/generated/booksearch';
 
 export const transientBookToBook = (
   book: TransientBook,

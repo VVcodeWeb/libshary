@@ -16,19 +16,33 @@
         "assets": ["libs/grpc/src/protos/*.proto"]
       }
     },
-    "generate": {
+    "generate-nest": {
       "executor": "nx:run-commands",
       "options": {
         "command": "protoc",
         "args": [
           "--proto_path=libs/grpc/src/protos",
           "--plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto",
-          "--ts_proto_out=libs/grpc/src/generated",
+          "--ts_proto_out=apps/api/src/__generated_proto__",
           "--ts_proto_opt=esModuleInterop=true",
           "--ts_proto_opt=addGrpcMetadata=true",
           "--ts_proto_opt=nestJs=true",
           "--ts_proto_opt=outputServices=grpc-js",
-          "--ts_proto_opt=outputClientImpl=grpc-web",
+          "libs/grpc/src/protos/*.proto"
+        ]
+      }
+    },
+    "generate-fastify": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "protoc",
+        "args": [
+          "--proto_path=libs/grpc/src/protos",
+          "--plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto",
+          "--ts_proto_out=apps/booksearch/src/__generated_proto__",
+          "--ts_proto_opt=esModuleInterop=true",
+          "--ts_proto_opt=addGrpcMetadata=true",
+          "--ts_proto_opt=outputServices=grpc-js",
           "libs/grpc/src/protos/*.proto"
         ]
       }

@@ -16,7 +16,8 @@
         "production": {
           "args": ["node-env=production"]
         }
-      }
+      },
+      "dependsOn": ["prisma:generate", "grpc:generate-nest"]
     },
     "serve": {
       "executor": "@nx/js:node",

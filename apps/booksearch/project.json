@@ -11,8 +11,8 @@
       "options": {
         "platform": "node",
         "outputPath": "dist/apps/booksearch",
-        "format": ["cjs"],
         "bundle": false,
+        "format": ["cjs"],
         "main": "apps/booksearch/src/main.ts",
         "tsConfig": "apps/booksearch/tsconfig.app.json",
         "assets": ["apps/booksearch/src/assets"],
@@ -35,7 +35,8 @@
             }
           }
         }
-      }
+      },
+      "dependsOn": ["grpc:generate-fastify"]
     },
 
     "serve": {

@@ -6,16 +6,16 @@ import {
   searchApiToProviderName,
   transientBookToBook,
 } from '@api/shared/mappers/grpc.mapper';
+
+import { BookFindArgs } from '@api/modules/books/dto/book-find.args';
+import { BookSearchArgs } from '@api/modules/books/dto/book-search.args';
+import { SearchResponseDto } from '@api/modules/books/models/search-response.model';
 import {
   BookSearchClient,
   BookSearchRequest,
   SearchApi,
   BookSearchResponse,
-} from '@libshary/grpc/generated/booksearch';
-import { BookFindArgs } from '@api/modules/books/dto/book-find.args';
-import { BookSearchArgs } from '@api/modules/books/dto/book-search.args';
-import { SearchResponseDto } from '@api/modules/books/models/search-response.model';
-import { BookModel } from '@api/modules/books/models/book.model';
+} from '@api/__generated_proto__/booksearch';
 
 @Injectable()
 export class BooksService implements OnModuleInit {

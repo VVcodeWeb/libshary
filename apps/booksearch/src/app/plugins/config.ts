@@ -28,9 +28,9 @@ export const autoConfig = {
   config: {
     open_library_url: 'https://openlibrary.org/search.json',
     google_books_url: 'https://www.googleapis.com/books/v1',
-    google_books_api_key: process.env.GOOGLE_BOOKS_API_KEY as string,
-    rabbitmq_url: process.env.RABBITMQ_URL as string,
-    redis_url: process.env.REDIS_URL as string,
+    google_books_api_key: process.env.GOOGLE_BOOKS_API_KEY,
+    rabbitmq_url: process.env.RABBITMQ_URL,
+    redis_url: process.env.REDIS_URL,
     node_env: (process.env.NODE_ENV = 'development'),
     grpc_port: process.env.GRPC_PORT || '50051',
   },

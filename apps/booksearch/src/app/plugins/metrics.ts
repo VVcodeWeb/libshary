@@ -9,7 +9,7 @@ import {
   register,
 } from 'prom-client';
 import { Status } from '@grpc/grpc-js/build/src/constants';
-import { SearchApi } from '@libshary/grpc/generated/booksearch';
+import { SearchApi } from '@booksearch/__generated_proto__/booksearch';
 
 const requestCounter = new Counter({
   name: 'http_requests_total',

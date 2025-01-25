@@ -2,7 +2,8 @@ FROM docker.io/node:lts-alpine as builder
 WORKDIR /app
 COPY dist/apps/api ./
 COPY libs/prisma/schema.prisma ./schema.prisma
-RUN npm ci && npx prisma generate
+COPY libs/grpc/src/protos/ ./libs/grpc/src/protos/
+RUN npm install --omit=dev && npm install @bufbuild/protobuf && npx prisma generate
 
 
 FROM docker.io/node:lts-alpine as runner

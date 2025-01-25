@@ -21,7 +21,7 @@ import {
   BookSearchByIdRequest,
   SearchApi,
   BookSearchByIdResponse,
-} from '@libshary/grpc/generated/booksearch';
+} from '@api/__generated_proto__/booksearch';
 
 @Injectable()
 export class SectionsBooksService {

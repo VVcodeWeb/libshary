@@ -13,6 +13,7 @@ const configuration = (): ConfigurationType => ({
       : process.env.DATA === 'true',
   booksearch_grpc: process.env.BOOKSEARCH_GRPC || '0.0.0.0:50051',
   rabbitmq_url: process.env.RABBITMQ_URL as string,
+  web_url: process.env.WEB_URL,
 });
 
 export interface ConfigurationType {
@@ -24,10 +25,13 @@ export interface ConfigurationType {
   book_search_url: string;
   booksearch_grpc: string;
   rabbitmq_url: string;
+  web_url: string;
 }
 
 export const validate = (config: Record<string, any>) => {
-  const missing: string[] = [];
+  const required = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'];
+  const missing: string[] = required.filter((key) => !config[key]);
+
   if (missing.length > 0) {
     throw new Error(`Missing configuration: ${missing.join(', ')}`);
   }
@@ -35,33 +39,3 @@ export const validate = (config: Record<string, any>) => {
 };
 
 export default configuration;
-
-// const localDevelopmentEnvPath = path.join(
-//   process.cwd(),
-//   'env/api/.env.development',
-// );
-
-// ConfigModule.forRoot({
-//     // NestJS can't validate Zod natively, we need to use a custom validation function
-//     validate: () => {
-//         const stage = process.env.STAGE;
-
-//         if (!stage) {
-//             console.log(
-//                 `STAGE env not defined, will try to load: ${localDevelopmentEnvPath}`
-//             );
-
-//             if (!fs.existsSync(localDevelopmentEnvPath)) {
-//                 console.log(
-//                     `File ${localDevelopmentEnvPath} does not exist!`
-//                 );
-//                 process.exit(1);
-//             }
-
-//             dotenv.config({ path: './env/api/.env.development' });
-//         }
-
-//         // apiEnvironmentValidationSchema is a Zod schema here
-//         return apiEnvironmentValidationSchema.parse(process.env);
-//     }
-// })

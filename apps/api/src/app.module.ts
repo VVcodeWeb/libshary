@@ -12,7 +12,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { SectionsBooksModule } from './modules/sections-books/sections-books.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [

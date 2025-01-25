@@ -6,18 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import {
-  type CallOptions,
-  ChannelCredentials,
-  Client,
-  type ClientOptions,
-  type ClientUnaryCall,
-  type handleUnaryCall,
-  makeGenericClientConstructor,
-  Metadata,
-  type ServiceError,
-  type UntypedServiceImplementation,
-} from "@grpc/grpc-js";
+import { type handleUnaryCall, Metadata, type UntypedServiceImplementation } from "@grpc/grpc-js";
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
@@ -537,45 +526,6 @@ export interface BookSearchServer extends UntypedServiceImplementation {
   search: handleUnaryCall<BookSearchRequest, BookSearchResponse>;
   searchById: handleUnaryCall<BookSearchByIdRequest, BookSearchByIdResponse>;
 }
-
-export interface BookSearchClient extends Client {
-  search(
-    request: BookSearchRequest,
-    callback: (error: ServiceError | null, response: BookSearchResponse) => void,
-  ): ClientUnaryCall;
-  search(
-    request: BookSearchRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: BookSearchResponse) => void,
-  ): ClientUnaryCall;
-  search(
-    request: BookSearchRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: BookSearchResponse) => void,
-  ): ClientUnaryCall;
-  searchById(
-    request: BookSearchByIdRequest,
-    callback: (error: ServiceError | null, response: BookSearchByIdResponse) => void,
-  ): ClientUnaryCall;
-  searchById(
-    request: BookSearchByIdRequest,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: BookSearchByIdResponse) => void,
-  ): ClientUnaryCall;
-  searchById(
-    request: BookSearchByIdRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: BookSearchByIdResponse) => void,
-  ): ClientUnaryCall;
-}
-
-export const BookSearchClient = makeGenericClientConstructor(BookSearchService, "booksearch.BookSearch") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): BookSearchClient;
-  service: typeof BookSearchService;
-  serviceName: string;
-};
 
 export interface MessageFns<T> {
   encode(message: T, writer?: BinaryWriter): BinaryWriter;

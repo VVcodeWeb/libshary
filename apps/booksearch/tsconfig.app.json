@@ -8,6 +8,6 @@
     "target": "es2021",
     "composite": true
   },
-  "include": ["src/**/*.ts", "../../libs/grpc/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["src/test.ts", "**/*.spec.ts"]
 }
