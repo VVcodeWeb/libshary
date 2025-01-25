@@ -15,43 +15,6 @@ services:
     networks:
       - libshary_network
 
-  rabbitmq:
-    image: rabbitmq:management-alpine
-    container_name: libshary_rabbitmq
-    hostname: libshary_rabbitmq
-    restart: always
-    environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=password
-    ports:
-      - '5672:5672'
-      - '15672:15672'
-    networks:
-      - libshary_network
-
-  booksearch:
-    restart: on-failure:5
-    build:
-      context: .
-      dockerfile: apps/booksearch/Dockerfile
-      args:
-        - NODE_ENV=production
-        - PORT=3001
-    container_name: libshary_booksearch
-    hostname: libshary_booksearch
-    ports:
-      - '3001:3001'
-    environment:
-      - GOOGLE_BOOKS_API_KEY=YOUR_GOOGLE_BOOKS_API_KEY
-      - RABBITMQ_URL=amqp://user:password@libshary_rabbitmq:5672
-      - HOST=libshary_booksearch
-      - REDIS_URL=redis://libshary_redis:6379
-    depends_on:
-      - rabbitmq
-      - redis
-    networks:
-      - libshary_network
-
   api:
     restart: on-failure:5
     build:
@@ -65,10 +28,11 @@ services:
     ports:
       - '3000:3000'
     environment:
+      - GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_BOOKS_CLIENT_SECRET
       - GOOGLE_CLIENT_ID=YOUR_GOOGLE_BOOKS_CLIENT_ID
       - DATABASE_URL=postgresql://admin:password@libshary_db:5432/bookshary_db?schema=public
-      - RABBITMQ_URL=amqp://user:password@libshary_rabbitmq:5672
-      - BOOK_SEARCH_URL=http://libshary_booksearch:3001
+      - BOOKSEARCH_GRPC=libshary_booksearch:50051
+      - WEB_URL=http://libshary_web:4200
     networks:
       - libshary_network
     depends_on:
@@ -95,34 +59,33 @@ services:
     networks:
       - libshary_network
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - api
-      - booksearch
+  booksearch:
+    restart: on-failure:5
+    build:
+      context: .
+      dockerfile: apps/booksearch/Dockerfile
+      args:
+        - NODE_ENV=production
+        - PORT=3001
+    container_name: libshary_booksearch
+    hostname: libshary_booksearch
     ports:
-      - '9090:9090'
+      - '3001:3001'
+    environment:
+      - GOOGLE_BOOKS_API_KEY=YOUR_GOOGLE_BOOKS_API_KEY
+      - HOST=libshary_booksearch
+      - REDIS_URL=redis://libshary_redis:6379
+    depends_on:
+      - rabbitmq
+      - redis
     networks:
       - libshary_network
-
   redis:
     image: redis:latest
     container_name: libshary_redis
     hostname: lishary_redis
     ports:
       - '6379:6379'
-    networks:
-      - libshary_network
-
-  grafana:
-    image: grafana/grafana
-    container_name: libshary_grafana
-    hostname: libshary_grafana
-    ports:
-      - '3005:3000'
     networks:
       - libshary_network
 volumes:

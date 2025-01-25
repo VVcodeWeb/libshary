@@ -22,12 +22,7 @@
           "generateLockfile": true
         }
       },
-      "dependsOn": [
-        {
-          "target": "codegen",
-          "projects": "graphql"
-        }
-      ]
+      "dependsOn": ["graphql:codegen"]
     },
     "serve": {
       "executor": "@nx/next:server",
@@ -49,7 +44,7 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["apps/web/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["apps/web/src/**/*.{ts,tsx,js,jsx}"]
       }
     },
     "docker-build": {

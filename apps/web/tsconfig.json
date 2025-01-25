@@ -31,5 +31,5 @@
     "../../libs/ui/src/**/*.{ts,tsx}",
     "../../libs/i18n/src/**/*.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": ["node_modules", "jest.config.ts", "eslint.config.ts"]
 }

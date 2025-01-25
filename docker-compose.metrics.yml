@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: libshary_grafana
+    hostname: libshary_grafana
+    ports:
+      - '3005:3000'
+    networks:
+      - libshary_network
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api
+      - booksearch
+    ports:
+      - '9090:9090'
+    networks:
+      - libshary_network
+networks:
+  libshary_network:
+    name: libshary_network
+    driver: bridge

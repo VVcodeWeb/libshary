@@ -37,6 +37,7 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
   const locale = (await params).lang;
+  const apiUrl = process.env.API_URL as string;
   if (!isValidLocale(locale)) {
     notFound();
   }
@@ -48,7 +49,7 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <AuthProvider session={session}>
-            <ApolloProvider>
+            <ApolloProvider apiUrl={apiUrl}>
               <ThemeProvider>
                 <ModalProvider>
                   <ToastProvider>{children}</ToastProvider>

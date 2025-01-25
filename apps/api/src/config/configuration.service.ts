@@ -21,7 +21,4 @@ export class ConfigurationService {
   get google_redirect_url() {
     return this.configService.get<string>('google_redirect_url') as string;
   }
-  get book_search_url() {
-    return this.configService.get<string>('book_search_url') as string;
-  }
 }

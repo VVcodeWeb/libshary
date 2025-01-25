@@ -1,9 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist/out-tsc",
+    "outDir": "../../dist/out-tsc/libs/prisma",
     "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
     "emitDeclarationOnly": false,
+    "composite": true,
     "types": ["node"]
   },
   "references": []

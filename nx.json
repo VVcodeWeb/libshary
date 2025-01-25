@@ -62,10 +62,6 @@
       }
     },
     {
-      "plugin": "@nx-tools/nx-container",
-      "options": {}
-    },
-    {
       "plugin": "@nx/cypress/plugin",
       "options": {
         "targetName": "e2e",

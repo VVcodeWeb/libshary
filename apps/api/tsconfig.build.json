@@ -7,9 +7,5 @@
     "**/*spec.ts",
     "src/**/__mocks__/**/*"
   ],
-  "references": [
-    {
-      "path": "../../libs/shared-types/tsconfig.lib.json"
-    }
-  ]
+  "references": []
 }

@@ -4,18 +4,8 @@
   "sourceRoot": "libs/graphql/src",
   "projectType": "library",
   "tags": [],
+  "implicitDependencies": ["api"],
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/graphql",
-        "tsConfig": "libs/graphql/tsconfig.lib.json",
-        "packageJson": "libs/graphql/package.json",
-        "main": "libs/graphql/src/index.ts",
-        "assets": ["libs/graphql/*.md", "libs/graphql/**/*.gql"]
-      }
-    },
     "generate-schema": {
       "executor": "nx:run-commands",
       "options": {

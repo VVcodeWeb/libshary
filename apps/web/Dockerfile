@@ -11,7 +11,7 @@ FROM node:lts-alpine AS builder
 WORKDIR /app
 
 COPY dist/apps/web/.next/standalone/ ./
-COPY dist/apps/web/.next/static ./apps/web/.next/static
+COPY dist/apps/web/.next/static dist/apps/web/.next/static
 RUN rm -rf /app/node_modules/.prisma/client 
 
 COPY --from=base /app/node_modules/.prisma/client /app/node_modules/.prisma/client

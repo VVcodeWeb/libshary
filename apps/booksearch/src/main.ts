@@ -1,7 +1,5 @@
 import Fastify from 'fastify';
 import { app } from './app/app';
-import grpcPlugin from './app/plugins/grpc';
-import { register } from 'prom-client';
 import pinoPretty from 'pino-pretty';
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
@@ -18,7 +16,7 @@ const server = Fastify({
     },
   },
 });
-server.log.info(`Include pino pretty ${pinoPretty.name}`);
+server.log.info(`Included pino pretty ${pinoPretty.name}`);
 
 server.register(app);
 

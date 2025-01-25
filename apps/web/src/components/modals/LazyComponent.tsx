@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 
 interface LazyComponentProps {
   filename: string;
-  props?: any;
+  props?: Record<string, any>;
 }
 export const LazyComponent = ({ filename, props }: LazyComponentProps) => {
   console.log({ filename });

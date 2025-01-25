@@ -7,7 +7,6 @@ class configurationService {
     google_client_secret: 'mockGoogleClientSecret',
     google_client_id: 'mockGoogleClientId',
     google_redirect_url: 'mockGoogleRedirectUrl',
-    book_search_url: 'mockBookSearchUrl',
   };
 
   get jwt_secret() {
@@ -24,9 +23,6 @@ class configurationService {
   }
   get google_redirect_url() {
     return this.mockConfig.google_redirect_url;
-  }
-  get book_search_url() {
-    return this.mockConfig.book_search_url;
   }
 }
 export const ConfigurationServiceMock = {

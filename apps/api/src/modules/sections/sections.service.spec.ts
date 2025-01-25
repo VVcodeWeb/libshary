@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigurationServiceMock } from '@api/config/__mock__/configuration.service.mock';
 import { SectionsService } from './sections.service';
 import { SectionsRepositoryMock } from './__mocks__/sections.repository.mock';
+import { AuthorizationServiceMock } from '@api/shared/services/__mocks__/authorization.service.mock';
 
 describe('SectionsService', () => {
   let service: SectionsService;
@@ -14,6 +15,7 @@ describe('SectionsService', () => {
         SectionsService,
         PrismaServiceMock,
         SectionsRepositoryMock,
+        AuthorizationServiceMock,
         ConfigurationServiceMock,
         {
           provide: HttpService,

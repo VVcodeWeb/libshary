@@ -12,6 +12,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
 import { SectionsBooksModule } from './modules/sections-books/sections-books.module';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { SectionsBooksModule } from './modules/sections-books/sections-books.mod
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'libs/graphql/src/schema.gql'),
-      playground: true,
+      playground: configuration().node_env === 'development',
     }),
   ],
   controllers: [AppController],

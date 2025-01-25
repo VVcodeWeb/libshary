@@ -9,6 +9,6 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [...compat.extends('flat/react')];
+const eslintConfig = [];
 
 export default eslintConfig;

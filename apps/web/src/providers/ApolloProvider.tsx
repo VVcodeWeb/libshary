@@ -23,28 +23,36 @@ const cache = new InMemoryCache({
     },
   },
 });
-const makeClient = () => {
-  const authLink = setContext(async (_, { headers }) => {
-    const session = await getSession();
-    const token = `Bearer ${session?.auth_token}`;
-    return {
-      headers: {
-        ...headers,
-        authorization: token,
-      },
-    };
-  });
-  const httpLink = new HttpLink({
-    uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
-  });
 
-  return new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: cache,
-  });
-};
+const ApolloProvider = ({
+  children,
+  apiUrl,
+}: {
+  apiUrl: string;
+  children: React.ReactNode;
+}) => {
+  const makeClient = () => {
+    const authLink = setContext(async (_, { headers }) => {
+      const session = await getSession();
+      const token = `Bearer ${session?.auth_token}`;
+      return {
+        headers: {
+          ...headers,
+          authorization: token,
+        },
+      };
+    });
 
-const ApolloProvider = ({ children }: { children: React.ReactNode }) => {
+    const httpLink = new HttpLink({
+      uri: `${apiUrl}/graphql`,
+    });
+    console.log({ httpLink });
+
+    return new ApolloClient({
+      link: authLink.concat(httpLink),
+      cache: cache,
+    });
+  };
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}

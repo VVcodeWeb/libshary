@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
-import path from 'path';
 //@typescript-eslint/no-require-imports
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { composePlugins, withNx } = require('@nx/next');
