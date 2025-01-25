@@ -50,12 +50,6 @@
           "buildTarget": "booksearch:build:production"
         }
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["apps/booksearch/src/**/*.{ts,tsx,js,jsx}"]
-      }
     }
   }
 }
