@@ -32,14 +32,11 @@
       "configurations": {
         "production": {
           "buildTarget": "web:build:production"
+        },
+        "development": {
+          "buildTarget": "web:build:development"
         }
-      },
-      "dependsOn": [
-        {
-          "target": "codegen",
-          "projects": "graphql"
-        }
-      ]
+      }
     },
     "lint": {
       "executor": "@nx/eslint:lint",

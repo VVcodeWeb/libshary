@@ -11,6 +11,23 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    name: Run linters
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci --cache --prefer-offline
+      - uses: nrwl/nx-set-shas@v4
+      - run: npx nx affected --target=lint --base=$NX_BASE --head=$NX_HEAD
+
   unit-tests:
     name: Run unit tests
     runs-on: ubuntu-latest
@@ -48,9 +65,12 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-
-      - run: npm ci --cache --prefer-offline
-      - run: npx nx run prisma:generate
+      - name: Install dependencies
+        run: npm ci --cache --prefer-offline
+      - name: Generate prisma client
+        run: npx nx run prisma:generate
+      - name: Generate GraphQL code
+        run: npx nx run graphql:codegen
 
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected --target=e2e --exclude=api-e2e --base=$NX_BASE --head=$NX_HEAD

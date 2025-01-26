@@ -1,9 +1,7 @@
-import { SearchApi } from '@api/__generated_proto__/booksearch';
-
 class Mock {
   search(args: any) {
     return {
-      apiProvider: SearchApi.GOOGLE_BOOKS,
+      apiProvider: 1,
       totalNumber: 1,
       limit: 10,
       offset: 0,
