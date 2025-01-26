@@ -10,7 +10,8 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npx ts-node -r tsconfig-paths/register --project libs/graphql/tsconfig.lib.json libs/graphql/src/generate-schema.ts"
-      }
+      },
+      "dependsOn": ["api:build"]
     },
     "codegen": {
       "executor": "nx:run-commands",
