@@ -1,23 +1,16 @@
-import baseConfig from '../../eslint.config.js';
-import { FlatCompat } from '@eslint/eslintrc';
-import path from 'path';
+import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { FlatCompat } from '@eslint/eslintrc';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
-export default [
+
+const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  ...baseConfig,
-  {
-    ignores: ['.next/', 'eslint.config.js'],
-  },
-  {
-    rules: {
-      '@next/next/no-html-link-for-pages': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'react/display-name': 'off',
-    },
-  },
 ];
+
+export default eslintConfig;

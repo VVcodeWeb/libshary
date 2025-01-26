@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "plugins": ["@nx/eslint-plugin"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "extends": ["plugin:@nx/typescript"],
+      "rules": {
+        "no-unused-private-class-members": "warn",
+        "no-unused-vars": "warn",
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "enforceBuildableLibDependency": true,
+            "allowCircularSelfDependency": true,
+            "allow": [],
+            "depConstraints": [
+              {
+                "sourceTag": "*",
+                "onlyDependOnLibsWithTags": ["*"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
