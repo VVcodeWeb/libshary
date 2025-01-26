@@ -28,7 +28,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm ci --cache --prefer-offline
+        run: npm ci --cache --prefer-offline && npm install @bufbuild/protobuf
 
       - name: Run build
         run: npx nx run ${{ matrix.service }}:build:production

@@ -42,7 +42,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --cache --prefer-offline
+        run: npm ci --cache --prefer-offline && npm install @bufbuild/protobuf
 
       - name: Generate Prisma client
         run: npx nx run prisma:generate
@@ -68,7 +68,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - name: Install dependencies
-        run: npm ci --cache --prefer-offline
+        run: npm ci --cache --prefer-offline && npm install @bufbuild/protobuf
       - name: Generate prisma client
         run: npx nx run prisma:generate
       - name: Generate GraphQL code
