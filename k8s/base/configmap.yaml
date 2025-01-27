@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: libshary
+data:
+  BOOKSEARCH_GRPC: 'booksearch:50051'
+  REDIS_URL: 'redis://default:$(REDIS_PASSWORD)@redis:6379'
+  DATABASE_USER: lib
+  DATABASE_URL: 'postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@postgres:5432/$(DATABASE_NAME)?schema=public'
