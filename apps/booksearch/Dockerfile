@@ -8,12 +8,10 @@ FROM docker.io/node:lts-alpine
 WORKDIR /app
 RUN apk add --no-cache dumb-init
 ARG NODE_ENV
-ARG PORT
 
 ENV NODE_ENV=$NODE_ENV
-ENV PORT=$PORT
 COPY --from=builder /app .
 RUN chown -R node:node .
 USER node
-EXPOSE $PORT
+EXPOSE 3001
 CMD ["dumb-init", "node", "main.js"]

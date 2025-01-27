@@ -22,7 +22,6 @@ services:
       dockerfile: apps/api/Dockerfile
       args:
         - NODE_ENV=production
-        - PORT=3000
     container_name: libshary_api
     hostname: libshary_api
     ports:
@@ -46,7 +45,6 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         - NODE_ENV=production
-        - PORT=4200
     container_name: libshary_web
     hostname: libshary_web
     ports:
@@ -66,7 +64,6 @@ services:
       dockerfile: apps/booksearch/Dockerfile
       args:
         - NODE_ENV=production
-        - PORT=3001
     container_name: libshary_booksearch
     hostname: libshary_booksearch
     ports:
