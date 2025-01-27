@@ -1,4 +1,3 @@
-'use client';
 import { ChevronDownIcon } from '@libshary/ui/icons/ChevronDownIcon';
 import { ChevronLeftIcon } from '@libshary/ui/icons/ChevronLeftIcon';
 import { ChevronRightIcon } from '@libshary/ui/icons/ChevronRightIcon';

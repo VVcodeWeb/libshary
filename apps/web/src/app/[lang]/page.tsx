@@ -1,5 +1,5 @@
 import SignInButton from '@web/components/auth/SignInButton';
-import { Link, redirect } from '@web/lib/i18n/routing';
+import { redirect } from '@web/lib/i18n/routing';
 import { authOptions } from '@web/lib/auth/auth-config';
 import { getServerSession } from 'next-auth';
 import { getLocale, getTranslations } from 'next-intl/server';
@@ -18,12 +18,6 @@ export default async function LandingPage() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <h1>{t('welcome')}</h1>
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <Link
-            href="/home"
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-          >
-            Shelf
-          </Link>
           <SignInButton />
         </div>
       </main>

@@ -16,3 +16,4 @@ export * from './PlusIcon';
 export * from './QueueListIcon';
 export * from './SquaresIcon';
 export * from './SunIcon';
+export * from './Spinner';
