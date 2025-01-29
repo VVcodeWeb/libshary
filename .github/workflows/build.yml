@@ -41,7 +41,7 @@ jobs:
         run: npx nx run ${{ matrix.service }}:build:production
 
       - name: Build Docker image
-        run: docker build -f apps/${{ matrix.service }}/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:${{ github.sha }} .
+        run: docker build --platform linux/arm64 -f apps/${{ matrix.service }}/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:${{ github.sha }} .
 
       - name: Login to Container Registry
         if: github.ref == 'refs/heads/main'
