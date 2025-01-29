@@ -4,8 +4,9 @@ metadata:
   name: libshary-ingress
   namespace: libshary
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
 spec:
+  ingressClassName: nginx
   rules:
     - host: libshary.com
       http:

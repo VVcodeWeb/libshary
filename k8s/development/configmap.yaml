@@ -2,9 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config
+  namespace: libshary
 data:
-  NODE_ENV: 'development'
-  DATABASE_NAME: 'libshary_dev'
-  API_URL: 'http://dev-api.libshary.com'
+  # Development-specific configs
+  API_URL: 'http://dev.libshary.com/api'
   WEB_URL: 'http://dev.libshary.com'
-  DATABASE_HOST: 'dev-postgres.database.svc'
+  DATABASE_NAME: libshary_dev

@@ -12,12 +12,17 @@ spec:
       labels:
         app: web
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/application: 'true'
       containers:
         - name: web
-          image: your-registry/libshary-web:latest # Update with your image
+          imagePullPolicy: IfNotPresent
+          image: ghcr.io/vvcodeweb/libshary/libshary-web:latest
           ports:
-            - containerPort: 4200
+            - containerPort: 3000
           env:
+            - name: DOCKER_DEFAULT_PLATFORM
+              value: linux/amd64
             - name: API_URL
               valueFrom:
                 configMapKeyRef:
@@ -44,3 +49,4 @@ spec:
     app: web
   ports:
     - port: 4200
+      targetPort: 3000

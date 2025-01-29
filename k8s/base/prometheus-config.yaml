@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: libshary
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'api'
+        static_configs:
+          - targets: ['api:3000']
+
+      - job_name: 'booksearch'
+        static_configs:
+          - targets: ['booksearch:3001']

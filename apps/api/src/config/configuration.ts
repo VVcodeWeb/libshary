@@ -1,5 +1,5 @@
 const configuration = (): ConfigurationType => ({
-  jwt_secret: process.env.JWT_SECRET || 'secret',
+  auth_secret: process.env.AUTH_SECRET || 'secret',
   google_client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
   google_client_id: process.env.GOOGLE_CLIENT_ID as string,
   google_redirect_url:
@@ -17,7 +17,7 @@ const configuration = (): ConfigurationType => ({
 });
 
 export interface ConfigurationType {
-  jwt_secret: string;
+  auth_secret: string;
   process_api_data: boolean;
   google_client_secret: string;
   google_client_id: string;

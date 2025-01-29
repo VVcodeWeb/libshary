@@ -12,14 +12,18 @@ spec:
       labels:
         app: booksearch
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/application: 'true'
       containers:
         - name: booksearch
-          image: your-registry/libshary-booksearch:latest
+          imagePullPolicy: IfNotPresent
+          image: ghcr.io/vvcodeweb/libshary/libshary-booksearch:latest
           ports:
             - containerPort: 3001
+            - containerPort: 50051
           env:
-            - name: NODE_ENV
-              value: 'production'
+            - name: DOCKER_DEFAULT_PLATFORM
+              value: linux/amd64
             - name: PORT
               value: '3001'
             - name: GOOGLE_BOOKS_API_KEY
@@ -28,7 +32,7 @@ spec:
                   name: app-secrets
                   key: GOOGLE_BOOKS_API_KEY
             - name: HOST
-              value: 'booksearch'
+              value: '0.0.0.0'
             - name: REDIS_URL
               valueFrom:
                 configMapKeyRef:
@@ -45,3 +49,6 @@ spec:
     app: booksearch
   ports:
     - port: 3001
+      name: booksearch
+    - port: 50051
+      name: grpc

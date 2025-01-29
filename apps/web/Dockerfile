@@ -26,6 +26,6 @@ RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/ ./
 
 USER nextjs
-EXPOSE 4200
+EXPOSE 3000
 
 CMD ["node", "apps/web/server.js"]

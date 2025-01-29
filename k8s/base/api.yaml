@@ -12,22 +12,24 @@ spec:
       labels:
         app: api
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/application: 'true'
       containers:
         - name: api
-          image: your-registry/libshary-api:latest # Update with your image
+          imagePullPolicy: IfNotPresent
+          image: ghcr.io/vvcodeweb/libshary/libshary-api:latest
           ports:
             - containerPort: 3000
           env:
+            - name: DOCKER_DEFAULT_PLATFORM
+              value: linux/amd64
             - name: WEB_URL
               valueFrom:
                 configMapKeyRef:
                   name: app-config
                   key: WEB_URL
             - name: DATABASE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: DATABASE_URL
+              value: 'postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@postgres:5432/$(DATABASE_NAME)?schema=public'
             - name: BOOKSEARCH_GRPC
               valueFrom:
                 configMapKeyRef:
@@ -44,6 +46,11 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: GOOGLE_CLIENT_ID
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: AUTH_SECRET
           envFrom:
             - configMapRef:
                 name: app-config
