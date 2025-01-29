@@ -12,11 +12,24 @@ spec:
       labels:
         app: grafana
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/monitoring: 'true'
       containers:
         - name: grafana
           image: grafana/grafana
           ports:
             - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-credentials
+                  key: GF_SECURITY_ADMIN_USER
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-credentials
+                  key: GF_SECURITY_ADMIN_PASSWORD
 ---
 apiVersion: v1
 kind: Service
@@ -43,8 +56,11 @@ spec:
       labels:
         app: prometheus
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/monitoring: 'true'
       containers:
         - name: prometheus
+          imagePullPolicy: IfNotPresent
           image: prom/prometheus
           ports:
             - containerPort: 9090

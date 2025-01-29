@@ -24,6 +24,8 @@ spec:
       labels:
         app: postgres
     spec:
+      nodeSelector:
+        node-role.kubernetes.io/application: 'true'
       containers:
         - name: postgres
           image: postgres:alpine

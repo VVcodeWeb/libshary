@@ -32,6 +32,7 @@ services:
       - DATABASE_URL=postgresql://admin:password@libshary_db:5432/bookshary_db?schema=public
       - BOOKSEARCH_GRPC=libshary_booksearch:50051
       - WEB_URL=http://libshary_web:4200
+      - AUTH_SECRET=secret
     networks:
       - libshary_network
     depends_on:
@@ -48,7 +49,7 @@ services:
     container_name: libshary_web
     hostname: libshary_web
     ports:
-      - '4200:4200'
+      - '4200:3000'
     environment:
       - API_URL=http://libshary_api:3000
       - NEXTAUTH_URL=http://libshary_web:4200
@@ -73,7 +74,6 @@ services:
       - HOST=libshary_booksearch
       - REDIS_URL=redis://libshary_redis:6379
     depends_on:
-      - rabbitmq
       - redis
     networks:
       - libshary_network

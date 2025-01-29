@@ -3,7 +3,6 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  NODE_ENV: 'production'
   DATABASE_NAME: 'libshary_prod'
   API_URL: 'https://api.libshary.com'
   WEB_URL: 'https://libshary.com'

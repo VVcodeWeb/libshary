@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     super({
       ignoreExpiration: true,
-      secretOrKey: configuration().jwt_secret,
+      secretOrKey: configuration().auth_secret,
       jwtFromRequest: extractJwtFromCookie,
       passReqToCallback: true,
     });
