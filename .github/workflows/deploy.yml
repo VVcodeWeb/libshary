@@ -5,10 +5,9 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'staging'
+        default: 'production'
         type: choice
         options:
-          - staging
           - production
       version:
         description: 'Version to deploy (leave empty for latest)'
@@ -34,103 +33,52 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VM1_SSH_KEY }}
 
-      - name: Create monitoring secrets (VM1)
+      - name: Update tags versions
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} '
-            # Create monitoring secrets file
-            cat << EOF > /tmp/monitoring-secrets.yaml
-            apiVersion: v1
-            kind: Secret
-            metadata:
-              name: grafana-credentials
-              namespace: libshary
-            type: Opaque
-            data:
-              GF_SECURITY_ADMIN_USER: $(echo -n "${{ secrets.GRAFANA_ADMIN_USER }}" | base64)
-              GF_SECURITY_ADMIN_PASSWORD: $(echo -n "${{ secrets.GRAFANA_ADMIN_PASS }}" | base64)
-            EOF
+          sed -i "s/newTag: .*/newTag: ${{ env.VERSION }}/g" k8s/base/kustomization.yaml
+      - name: Copy K8s configs to VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} 'mkdir -p ~/k8s'
+          scp -o StrictHostKeyChecking=no -r k8s/base ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }}:~/k8s/
+          scp -o StrictHostKeyChecking=no -r k8s/${{ inputs.environment }} ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }}:~/k8s/
 
-            # Apply monitoring secrets
-            sudo k3s kubectl apply -f /tmp/monitoring-secrets.yaml
-            rm /tmp/monitoring-secrets.yaml  # Cleanup
+      - name: Update and apply secrets
+        run: |
+          scp -o StrictHostKeyChecking=no k8s/base/secrets.yaml ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }}:/tmp/
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} '
+            sed -i "s/base64_encoded_secret/${{ secrets.GOOGLE_CLIENT_SECRET }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_id/${{ secrets.GOOGLE_CLIENT_ID }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_key/${{ secrets.GOOGLE_BOOKS_API_KEY }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_secret/${{ secrets.NEXTAUTH_SECRET }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_password/${{ secrets.DATABASE_PASSWORD }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_redis_password/${{ secrets.REDIS_PASSWORD }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_admin_user/${{ secrets.GRAFANA_ADMIN_USER }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_admin_password/${{ secrets.GRAFANA_ADMIN_PASS }}/g" /tmp/secrets.yaml
+            sed -i "s/base64_encoded_auth_secret/${{ secrets.AUTH_SECRET }}/g" /tmp/secrets.yaml
+            
+            sudo k3s kubectl apply -f /tmp/secrets.yaml
+            rm /tmp/secrets.yaml
           '
 
-      - name: Create application secrets (VM1)
+      - name: Apply K8s
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} '
-            # Create application secrets file
-            cat << EOF > /tmp/app-secrets.yaml
-            apiVersion: v1
-            kind: Secret
-            metadata:
-              name: app-secrets
-              namespace: libshary
-            type: Opaque
-            data:
-              GOOGLE_CLIENT_SECRET: $(echo -n "${{ secrets.GOOGLE_CLIENT_SECRET }}" | base64)
-              GOOGLE_CLIENT_ID: $(echo -n "${{ secrets.GOOGLE_CLIENT_ID }}" | base64)
-              GOOGLE_BOOKS_API_KEY: $(echo -n "${{ secrets.GOOGLE_BOOKS_API_KEY }}" | base64)
-              NEXTAUTH_SECRET: $(echo -n "${{ secrets.NEXTAUTH_SECRET }}" | base64)
-              DATABASE_PASSWORD: $(echo -n "${{ secrets.DATABASE_PASSWORD }}" | base64)
-              REDIS_PASSWORD: $(echo -n "${{ secrets.REDIS_PASSWORD }}" | base64)
-              AUTH_SECRET: $(echo -n "${{ secrets.AUTH_SECRET }}" | base64)
-            EOF
-
-            # Apply application secrets
-            sudo k3s kubectl apply -f /tmp/app-secrets.yaml
-            rm /tmp/app-secrets.yaml  # Cleanup
-          '
-
-      - name: Deploy all configurations (VM1)
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} '
-            # Apply base configurations
-            sudo k3s kubectl apply -f k8s/base/namespace.yaml
-            sudo k3s kubectl apply -f k8s/base/configmap.yaml
-            
-            # Apply environment-specific configurations using kustomize
-            sudo k3s kubectl apply -k k8s/${{ inputs.environment }}
-            
-            # Apply all services and deployments
-            sudo k3s kubectl apply -f k8s/base/monitoring.yaml
-            sudo k3s kubectl apply -f k8s/base/postgres.yaml
-            sudo k3s kubectl apply -f k8s/base/redis.yaml
-            sudo k3s kubectl apply -f k8s/base/api.yaml
-            sudo k3s kubectl apply -f k8s/base/web.yaml
-            sudo k3s kubectl apply -f k8s/base/booksearch.yaml
-            sudo k3s kubectl apply -f k8s/base/ingress.yaml
+            sudo k3s kubectl apply -k ~/k8s/base
+            sudo k3s kubectl apply -k ~/k8s/${{ inputs.environment }}
           '
 
       - name: Verify deployments
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} '
             echo "Verifying deployments..."
-            sudo k3s kubectl rollout status deployment/grafana -n libshary
-            sudo k3s kubectl rollout status deployment/prometheus -n libshary
-            sudo k3s kubectl rollout status deployment/postgres -n libshary
-            sudo k3s kubectl rollout status deployment/redis -n libshary
-            sudo k3s kubectl rollout status deployment/api -n libshary
-            sudo k3s kubectl rollout status deployment/web -n libshary
-            sudo k3s kubectl rollout status deployment/booksearch -n libshary
+            for dep in grafana prometheus postgres redis api web booksearch; do
+              sudo k3s kubectl rollout status deployment/$dep -n libshary
+            done
           '
 
       - name: Verify services
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} '
-            echo "Checking all pods..."
-            sudo k3s kubectl get pods -n libshary
-            echo "Checking all services..."
-            sudo k3s kubectl get services -n libshary
+            echo "Checking all resources..."
+            sudo k3s kubectl get all -n libshary
           '
-
-      - name: Update image versions
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} "
-            # Update image versions using kubectl set image
-            sudo k3s kubectl set image deployment/booksearch -n libshary \
-              booksearch=${{ env.REGISTRY }}/${{ env.REPO_NAME }}/libshary-booksearch:${{ env.VERSION }}
-            sudo k3s kubectl set image deployment/api -n libshary \
-              api=${{ env.REGISTRY }}/${{ env.REPO_NAME }}/libshary-api:${{ env.VERSION }}
-            sudo k3s kubectl set image deployment/web -n libshary \
-              web=${{ env.REGISTRY }}/${{ env.REPO_NAME }}/libshary-web:${{ env.VERSION }}
-          "

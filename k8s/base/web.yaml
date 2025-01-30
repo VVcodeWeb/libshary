@@ -17,7 +17,17 @@ spec:
       containers:
         - name: web
           imagePullPolicy: IfNotPresent
-          image: ghcr.io/vvcodeweb/libshary/libshary-web:$(VERSION)
+          image: ghcr.io/vvcodeweb/libshary/libshary-web
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
           ports:
             - containerPort: 3000
           env:

@@ -11,3 +11,11 @@ resources:
   - api.yaml
   - web.yaml
   - booksearch.yaml
+
+images:
+  - name: ghcr.io/vvcodeweb/libshary/libshary-api
+    newTag: v0.0.0
+  - name: ghcr.io/vvcodeweb/libshary/libshary-web
+    newTag: v0.0.0
+  - name: ghcr.io/vvcodeweb/libshary/libshary-booksearch
+    newTag: v0.0.0

@@ -17,7 +17,18 @@ spec:
       containers:
         - name: booksearch
           imagePullPolicy: IfNotPresent
-          image: ghcr.io/vvcodeweb/libshary/libshary-booksearch:$(VERSION)
+          image: ghcr.io/vvcodeweb/libshary/libshary-booksearch
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3001
+
           ports:
             - containerPort: 3001
             - containerPort: 50051

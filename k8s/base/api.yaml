@@ -17,7 +17,24 @@ spec:
       containers:
         - name: api
           imagePullPolicy: IfNotPresent
-          image: ghcr.io/vvcodeweb/libshary/libshary-api:$(VERSION)
+          image: ghcr.io/vvcodeweb/libshary/libshary-api
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '256Mi'
+              cpu: '200m'
           ports:
             - containerPort: 3000
           env:
@@ -56,21 +73,7 @@ spec:
                 name: app-config
             - secretRef:
                 name: app-secrets
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 3000
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 3000
-          resources:
-            requests:
-              memory: '128Mi'
-              cpu: '100m'
-            limits:
-              memory: '256Mi'
-              cpu: '200m'
+
 ---
 apiVersion: v1
 kind: Service
