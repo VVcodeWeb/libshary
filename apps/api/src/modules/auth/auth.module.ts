@@ -14,7 +14,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [
     PrismaModule,
     JwtModule.register({
-      secret: configuration().jwt_secret,
+      secret: configuration().auth_secret,
       signOptions: { expiresIn: '60s' },
     }),
     ConfigurationModule,

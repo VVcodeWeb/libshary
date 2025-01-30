@@ -6,8 +6,8 @@ import { ConfigurationType } from './configuration';
 export class ConfigurationService {
   constructor(private configService: ConfigService<ConfigurationType>) {}
 
-  get jwt_secret() {
-    return this.configService.get<string>('jwt_secret') as string;
+  get auth_secret() {
+    return this.configService.get<string>('auth_secret') as string;
   }
   get data() {
     return this.configService.get<string>('process_api_data') as string;

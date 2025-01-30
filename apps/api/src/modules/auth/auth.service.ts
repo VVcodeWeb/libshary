@@ -25,7 +25,7 @@ export class AuthService {
     };
     return this.jwtService.signAsync(payload, {
       expiresIn,
-      secret: this.configService.jwt_secret,
+      secret: this.configService.auth_secret,
     });
   }
 
