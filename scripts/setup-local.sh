@@ -34,7 +34,6 @@ echo "Creating namespace..."
 kubectl apply -f k8s/base/namespace.yaml
 
 echo "Setting up storage..."
-kubectl apply -f k8s/base/storage.yaml
 
 
 # Create secrets
@@ -96,7 +95,7 @@ kubectl apply -f k8s/development/ingress.yaml
 
 # Wait for deployments
 echo "Waiting for deployments..."
-for deployment in postgres redis api web booksearch grafana prometheus; do
+for deployment in  redis api web booksearch grafana prometheus postgres; do
     echo "Waiting for $deployment..."
     kubectl rollout status deployment/$deployment -n libshary --timeout=120s || {
         echo "❌ Error: $deployment deployment failed"

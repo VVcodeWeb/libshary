@@ -54,3 +54,4 @@ apps/api/src/__generated_proto__/*
 apps/booksearch/src/__generated_proto__/*
 apps/web/src/__generated__/*
 libs/grpc/src/generated
+ingress-nginx.yaml
