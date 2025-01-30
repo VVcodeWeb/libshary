@@ -46,7 +46,7 @@ jobs:
           driver-opts: image=moby/buildkit:rootless
 
       - name: Build Docker image for ${{ matrix.service }}
-        run: docker buildx build  --platform linux/arm64,linux/amd64 -f apps/${{ matrix.service }}/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:${{ github.sha }} .
+        run: docker buildx build  --platform linux/arm64 -f apps/${{ matrix.service }}/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:${{ github.sha }} .
 
       - name: Login to Container Registry
         if: github.ref == 'refs/heads/main'
@@ -61,5 +61,4 @@ jobs:
         run: |
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:${{ github.sha }} \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/libshary-${{ matrix.service }}:latest

@@ -1,4 +1,4 @@
-FROM docker.io/node:lts-alpine as builder
+FROM docker.io/node:lts-alpine AS builder
 WORKDIR /app
 COPY dist/apps/booksearch ./
 
