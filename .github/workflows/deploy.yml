@@ -10,10 +10,15 @@ on:
         options:
           - staging
           - production
+      version:
+        description: 'Version to deploy (leave empty for latest)'
+        required: false
+        type: string
 
 env:
   REGISTRY: ghcr.io
   REPO_NAME: ${{ github.repository }}
+  VERSION: ${{ inputs.version || 'latest' }}
 
 jobs:
   deploy:
@@ -117,3 +122,15 @@ jobs:
             echo "Checking all services..."
             sudo k3s kubectl get services -n libshary
           '
+
+      - name: Update image versions
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VM1_USER }}@${{ secrets.VM1_HOST }} "
+            # Update image versions using kubectl set image
+            sudo k3s kubectl set image deployment/booksearch -n libshary \
+              booksearch=${{ env.REGISTRY }}/${{ env.REPO_NAME }}/libshary-booksearch:${{ env.VERSION }}
+            sudo k3s kubectl set image deployment/api -n libshary \
+              api=${{ env.REGISTRY }}/${{ env.REPO_NAME }}/libshary-api:${{ env.VERSION }}
+            sudo k3s kubectl set image deployment/web -n libshary \
+              web=${{ env.REGISTRY }}/${{ env.REPO_NAME }}/libshary-web:${{ env.VERSION }}
+          "

@@ -1,19 +1,11 @@
 #!/bin/bash
 
 set -e  # Exit on error
-
 echo "🚀 Starting local Kubernetes setup..."
-
-# Start fresh minikube if not running
-if ! minikube status > /dev/null 2>&1; then
-    echo "Starting minikube..."
-    minikube start
-fi
-
 # Setup node labels properly
 echo "Setting up node labels..."
-kubectl label nodes minikube node-role.kubernetes.io/application=true --overwrite
-kubectl label nodes minikube node-role.kubernetes.io/monitoring=true --overwrite
+kubectl label nodes k8s-worker  node-role.kubernetes.io/application=true --overwrite
+kubectl label nodes controle    node-role.kubernetes.io/monitoring=true --overwrite
 
 # Install ingress-nginx using Helm
 echo "Installing ingress-nginx..."

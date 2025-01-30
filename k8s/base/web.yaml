@@ -17,7 +17,7 @@ spec:
       containers:
         - name: web
           imagePullPolicy: IfNotPresent
-          image: ghcr.io/vvcodeweb/libshary/libshary-web:latest
+          image: ghcr.io/vvcodeweb/libshary/libshary-web:$(VERSION)
           ports:
             - containerPort: 3000
           env:

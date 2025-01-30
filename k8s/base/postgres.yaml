@@ -54,6 +54,10 @@ spec:
         - name: postgres-storage
           persistentVolumeClaim:
             claimName: postgres-pvc
+            spec:
+              resources:
+                requests:
+                  storage: 1Gi
 ---
 apiVersion: v1
 kind: Service

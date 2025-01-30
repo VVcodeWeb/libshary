@@ -6,5 +6,4 @@ metadata:
 data:
   BOOKSEARCH_GRPC: 'booksearch:50051'
   DATABASE_USER: admin
-  DATABASE_NAME: libshary
   REDIS_URL: 'redis://default:$(REDIS_PASSWORD)@redis:6379'

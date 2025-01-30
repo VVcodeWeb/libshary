@@ -18,3 +18,13 @@ spec:
                 name: web
                 port:
                   number: 4200
+    - host: api.libshary.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3000

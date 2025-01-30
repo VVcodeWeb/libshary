@@ -6,7 +6,6 @@ resources:
   - configmap.yaml
   - prometheus-config.yaml
   - monitoring.yaml
-  - storage.yaml
   - postgres.yaml
   - redis.yaml
   - api.yaml
