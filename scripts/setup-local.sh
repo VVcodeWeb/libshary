@@ -33,9 +33,6 @@ kubectl wait --namespace ingress-nginx \
 echo "Creating namespace..."
 kubectl apply -f k8s/base/namespace.yaml
 
-echo "Setting up storage..."
-
-
 # Create secrets
 echo "Creating development secrets..."
 cat << EOF | kubectl apply -f -
@@ -67,31 +64,11 @@ data:
   GF_SECURITY_ADMIN_PASSWORD: $(echo -n "local-password" | base64)
 EOF
 
-# Apply configuration
-kubectl apply -f k8s/base/prometheus-config.yaml
-kubectl apply -f k8s/base/configmap.yaml
 
-# Apply development overrides
-echo "Applying development configurations..."
+kubectl apply -k k8s/base
 kubectl apply -k k8s/development
-
-# Apply base resources
-echo "Applying base resources..."
-kubectl apply -f k8s/base/monitoring.yaml
-kubectl apply -f k8s/base/postgres.yaml
-kubectl apply -f k8s/base/redis.yaml
-kubectl apply -f k8s/base/api.yaml
-kubectl apply -f k8s/base/web.yaml
-kubectl apply -f k8s/base/booksearch.yaml
-
-# Wait before applying ingress
 echo "Waiting for services to be ready..."
 sleep 10
-
-# Apply ingress
-echo "Applying ingress configuration..."
-kubectl apply -f k8s/development/ingress.yaml
-
 
 # Wait for deployments
 echo "Waiting for deployments..."
@@ -128,10 +105,3 @@ Useful commands:
 - View logs: kubectl logs -n libshary <pod-name>
 - Restart deployment: kubectl rollout restart deployment/<name> -n libshary
 "
-
-# On both nodes
-sudo kubeadm reset -f
-sudo rm -rf /etc/cni/net.d
-sudo rm -rf $HOME/.kube/config
-sudo systemctl restart containerd
-sudo systemctl restart kubelet
